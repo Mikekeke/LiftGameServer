@@ -6,8 +6,8 @@ import play.api.mvc._
 
 object Application extends Controller {
   def index = Action {
-    val json = TempHolder.questions.map(Json.toJson[Question]).mkString
-    Ok(views.html.index(json))
+    val jsons = TempHolder.questions.map(Json.toJson[Question]).map(_.toString())
+    Ok(views.html.index(jsons))
   }
 
 }
