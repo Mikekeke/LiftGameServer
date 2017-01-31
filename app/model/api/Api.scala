@@ -7,7 +7,9 @@ object Api {
   object Method {
     val QUESTION = "question"
     val CHECK = "check"
+    val EXPAND_ANSWER = "expand_answer"
     val LOGO = "logo"
+    val PICK_VARIANT = "pick_variant"
   }
 
 }

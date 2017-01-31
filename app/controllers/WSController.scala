@@ -18,7 +18,6 @@ import play.api.libs.streams._
 class WSController @Inject()
 (implicit system: ActorSystem, materializer: Materializer)
   extends Controller {
-  var r: LiftWebSocketActor = null
 
 //  val socket1: WebSocket = WebSocket.accept[String, String] { request =>
 //    ActorFlow.actorRef(out => LiftWebSocketActor.props(out))
@@ -30,9 +29,10 @@ class WSController @Inject()
 //    Redirect(routes.WSController.index())
 //  }
 
-  val jsons: List[String] = TempHolder.questions.map(Json.toJson[Question]).map(_.toString())
+
+  val s = " dfd"
   def index = Action {implicit request =>
-    Ok(views.html.index(jsons))
+    Ok(views.html.index(currentQuestion.getOrElse("NOT SET")))
   }
 
   var sender: ActorRef = null
@@ -52,14 +52,35 @@ class WSController @Inject()
     Redirect(routes.WSController.index())
   }
 
+  val jsons: List[String] = TempHolder.questions.map(Json.toJson[Question]).map(_.toString())
   def pickQuestion = Action { implicit request =>
     sender ! ApiMessage(Api.Method.LOGO, "")
+    Ok(views.html.questions(jsons))
+  }
+
+  var currentQuestion: Option [String] = None
+  def setQuestion(s: String) = Action { implicit request =>
+    currentQuestion = Some(s)
     Redirect(routes.WSController.index())
   }
 
+  def pickVariant() = Action {implicit request =>
+    request.body.asFormUrlEncoded.get("send_variant").headOption match {
+      case Some("var_1") => sender ! ApiMessage(Api.Method.PICK_VARIANT, "1")
+      case Some("var_2") => sender ! ApiMessage(Api.Method.PICK_VARIANT, "2")
+      case Some("var_3") => sender ! ApiMessage(Api.Method.PICK_VARIANT, "3")
+      case Some("var_4") => sender ! ApiMessage(Api.Method.PICK_VARIANT, "4")
+    }
 
-  def check() = Action {implicit request =>
-    sender ! ApiMessage(Api.Method.CHECK, "")
+    Redirect(routes.WSController.index())
+  }
+
+  def questionAction = Action {implicit request =>
+    request.body.asFormUrlEncoded.get("qaction").headOption match {
+      case Some("check") => sender ! ApiMessage(Api.Method.CHECK, "")
+      case Some("expand") => sender ! ApiMessage(Api.Method.EXPAND_ANSWER, "")
+    }
+
     Redirect(routes.WSController.index())
   }
 }

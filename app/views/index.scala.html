@@ -1,4 +1,4 @@
-@(message: List[String])
+@(question: String)
 
 <!DOCTYPE html>
 
@@ -10,22 +10,34 @@
         <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
     </head>
     <body>
-        <p>WS test</p>
+        <p>Test server</p>
         @helper.form(action = routes.WSController.pickQuestion()) {
             <input type="submit" value="Выбрать вопрос"/>
         }
-
-        @for(s <- message) {
-            <p>@s</p>
-            @helper.form(action = routes.WSController.send(s)) {
-                <input type="submit" value="Send"/>
+        @if(!question.equals("NOT SET")) {
+            @helper.form(action = routes.WSController.send(question)) {
+                <input type="submit" value="Задать--->"/>
             }
         }
 
-        <p>WS test</p>
-        @helper.form(action = routes.WSController.check()) {
-            <input type="submit" value="Check"/>
+        <p><u>Current question:</u></p>
+        <p>@question</p>
+
+        @if(!question.equals("NOT SET")) {
+            @helper.form(action = routes.WSController.pickVariant()) {
+                <button type="submit" name="send_variant" value="var_1">Variant 1</button>
+                <button type="submit" name="send_variant" value="var_2">Variant 2</button>
+                <br>
+                <button type="submit" name="send_variant" value="var_3">Variant 3</button>
+                <button type="submit" name="send_variant" value="var_4">Variant 4</button>
+            }
+
+            @helper.form(action = routes.WSController.questionAction()) {
+                <button type="submit" name="qaction" value="check">Правлильный вариант</button>
+                <button type="submit" name="qaction" value="expand">Ответ развёрнутый</button>
+            }
         }
+
 
     </body>
 </html>
