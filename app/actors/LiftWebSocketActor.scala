@@ -16,9 +16,9 @@ class LiftWebSocketActor(out: ActorRef) extends Actor {
 
   def receive: PartialFunction[Any, Unit] = {
     case msg: String =>
-      out ! ("I received your message: " + msg)
+      out ! ("LiftWebSocketActor: received your message: " + msg)
     case mes: ApiMessage =>
-      out ! mes.getContent
+      out ! mes.body
     case other => out ! "Got something"
 
   }

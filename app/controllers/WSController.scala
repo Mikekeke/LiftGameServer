@@ -95,7 +95,7 @@ class WSController @Inject()
     Redirect(routes.WSController.index())
   }
 
-  def imgsocket: WebSocket = WebSocket.accept[String, String] {request =>
+  def imgsocket: WebSocket = WebSocket.accept[Array[Byte], Array[Byte]] {request =>
     ActorFlow.actorRef(out => ImageActor.props(out))
   }
 }
