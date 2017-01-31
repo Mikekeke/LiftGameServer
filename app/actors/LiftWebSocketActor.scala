@@ -14,11 +14,12 @@ object LiftWebSocketActor {
 class LiftWebSocketActor(out: ActorRef) extends Actor {
   def send(s: String) = out ! s
 
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
     case msg: String =>
       out ! ("I received your message: " + msg)
     case mes: ApiMessage =>
       out ! mes.getContent
+    case other => out ! "Got something"
 
   }
 }

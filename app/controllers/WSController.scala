@@ -1,8 +1,9 @@
 package controllers
 
+import java.util.concurrent.TimeUnit
 import javax.inject._
 
-import actors.{LiftWebSocketActor, SendActor}
+import actors.{ImageActor, LiftWebSocketActor, SendActor}
 import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.Materializer
 import model.api.{Api, ApiMessage}
@@ -10,6 +11,8 @@ import model.{QMessage, Question, TempHolder}
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.libs.streams._
+
+import scala.concurrent.duration.Duration
 
 /**
   * Created by Mikekeke on 30-Jan-17.
@@ -80,8 +83,20 @@ class WSController @Inject()
       case Some("check") => sender ! ApiMessage(Api.Method.CHECK, "")
       case Some("expand") => sender ! ApiMessage(Api.Method.EXPAND_ANSWER, "")
     }
-
     Redirect(routes.WSController.index())
+  }
+
+  import system.dispatcher
+  def testScheduler = Action {implicit  request =>
+    sender ! ApiMessage("screenshot", "")
+//    system.scheduler.schedule(Duration(0, TimeUnit.SECONDS), Duration(2, TimeUnit.SECONDS)) {
+//      sender ! "give image"
+//    }
+    Redirect(routes.WSController.index())
+  }
+
+  def imgsocket: WebSocket = WebSocket.accept[String, String] {request =>
+    ActorFlow.actorRef(out => ImageActor.props(out))
   }
 }
 
