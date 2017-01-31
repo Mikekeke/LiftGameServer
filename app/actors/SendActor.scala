@@ -12,7 +12,7 @@ object SendActor {
 }
 class SendActor(out: ActorRef) extends Actor{
   override def receive = {
-    case msg: String => out ! msg
+    case anything => out ! anything
 
   }
 }

@@ -10,14 +10,22 @@
         <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
     </head>
     <body>
+        <p>WS test</p>
+        @helper.form(action = routes.WSController.pickQuestion()) {
+            <input type="submit" value="Выбрать вопрос"/>
+        }
+
         @for(s <- message) {
             <p>@s</p>
+            @helper.form(action = routes.WSController.send(s)) {
+                <input type="submit" value="Send"/>
+            }
         }
 
         <p>WS test</p>
-        @helper.form(action = routes.WSController.send("string")) {
-            <input type="submit" value="Send"/>
-
+        @helper.form(action = routes.WSController.check()) {
+            <input type="submit" value="Check"/>
         }
+
     </body>
 </html>
