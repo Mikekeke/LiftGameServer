@@ -1,18 +1,19 @@
 package controllers
 
-import java.util.concurrent.TimeUnit
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
 import javax.inject._
 
 import actors.{ImageActor, LiftWebSocketActor, SendActor}
 import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.Materializer
 import model.api.{Api, ApiMessage}
-import model.{QMessage, Question, TempHolder}
+import model.{Question, TempHolder}
 import play.api.libs.json.Json
-import play.api.mvc._
 import play.api.libs.streams._
-
-import scala.concurrent.duration.Duration
+import play.api.mvc.WebSocket.MessageFlowTransformer
+import play.api.mvc._
 
 /**
   * Created by Mikekeke on 30-Jan-17.
@@ -32,14 +33,14 @@ class WSController @Inject()
 //    Redirect(routes.WSController.index())
 //  }
 
-
-  val s = " dfd"
   def index = Action {implicit request =>
     Ok(views.html.index(currentQuestion.getOrElse("NOT SET")))
   }
 
-  var sender: ActorRef = null
+  var sender: ActorRef = _
+
   val socket1: WebSocket = WebSocket.accept[String, String] { request =>
+//  val socket1: WebSocket = WebSocket.accept[Either[String, Array[Byte]], Either[String, Array[Byte]]] { request =>
     ActorFlow.actorRef(out => {
       val props = LiftWebSocketActor.props(out)
       val socketActor = system.actorOf(props)
@@ -85,8 +86,6 @@ class WSController @Inject()
     }
     Redirect(routes.WSController.index())
   }
-
-  import system.dispatcher
   def testScheduler = Action {implicit  request =>
     sender ! ApiMessage("screenshot", "")
 //    system.scheduler.schedule(Duration(0, TimeUnit.SECONDS), Duration(2, TimeUnit.SECONDS)) {

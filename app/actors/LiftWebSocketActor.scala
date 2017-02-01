@@ -11,14 +11,17 @@ object LiftWebSocketActor {
   def props(out: ActorRef) = Props(new LiftWebSocketActor(out))
 }
 
-class LiftWebSocketActor(out: ActorRef) extends Actor {
-  def send(s: String) = out ! s
+class LiftWebSocketActor(out: ActorRef) extends Actor with akka.actor.ActorLogging{
 
   def receive: PartialFunction[Any, Unit] = {
-    case msg: String =>
+    case msg: String =>{
+      log.debug("Got string")
       out ! ("LiftWebSocketActor: received your message: " + msg)
-    case mes: ApiMessage =>
+    }
+    case mes: ApiMessage => {
+      log.debug("Got ApiMessage")
       out ! mes.body
+    }
     case other => out ! "Got something"
 
   }
