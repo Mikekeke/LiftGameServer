@@ -58,8 +58,9 @@ class WSController @Inject()
 
   val jsons: List[String] = TempHolder.questions.map(Json.toJson[Question]).map(_.toString())
   def pickQuestion = Action { implicit request =>
-    sender ! ApiMessage(Api.Method.LOGO, "")
-    Ok(views.html.questions(jsons))
+    // TODO: put this back!!!
+//    sender ! ApiMessage(Api.Method.LOGO, "")
+    Redirect(routes.XLController.indexQuestions())
   }
 
   var currentQuestion: Option [String] = None

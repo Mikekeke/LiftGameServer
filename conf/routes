@@ -12,6 +12,10 @@ POST        /pick_question          controllers.WSController.pickQuestion
 POST        /set_question           controllers.WSController.setQuestion(s: String)
 POST        /pick_variant           controllers.WSController.pickVariant
 POST        /test_sch               controllers.WSController.testScheduler
+GET         /questions              controllers.XLController.indexQuestions
+GET         /open_file              controllers.XLController.openFile
+GET         /test_file              controllers.XLController.testFile
+POST        /save_q_to_xl           controllers.XLController.save(num: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file           controllers.Assets.at(path="/public", file)
