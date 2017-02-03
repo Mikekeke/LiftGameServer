@@ -1,17 +1,16 @@
 package utils
 
 import java.io.{File, PrintWriter}
-import java.nio.charset.Charset
 
 import scala.io.Source
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 /**
   * Created by ibes on 02.02.17.
   */
 object FileUtils {
   private  val PATH = "public/persist/excel.path"
-  def persistExcelFilePath(path: String) = {
+  def persistExcelFilePath(path: String): Unit = {
     val pw = new PrintWriter(new File(PATH))
     pw.write(path)
     pw.close()

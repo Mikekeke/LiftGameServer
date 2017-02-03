@@ -11,9 +11,12 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import froms.QForm
 import model.Question
+import model.api.{Api, ApiMessage}
 import play.api.data.Form
 import play.api.mvc._
-import utils.{ExcelUtil, FileUtils}
+import utils.{CachedQuestion, ExcelUtil, FileUtils}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 
 import scala.util.{Failure, Success, Try}
 
@@ -58,7 +61,7 @@ class XLController @Inject()
 
   val questionForm: Form[QForm] = Form(
     tuple(
-      "num" -> number,
+      "number" -> number,
       "name"-> text,
       "question" -> text,
       "v1" -> text,
@@ -70,37 +73,44 @@ class XLController @Inject()
       "status" -> number
     )
   )
-case class UserData(name: String, age: Int)
-  val userForm = Form(
-    mapping(
-      "name" -> text,
-      "age" -> number
-    )(UserData.apply)(UserData.unapply)
-  )
 
+  def saveOrPick(questionNum: Int) = Action { implicit request =>
+    val form = questionForm.bindFromRequest
+    if (form.hasErrors) {
+      println(form.errors)
+      Redirect(routes.XLController.indexQuestions())
+    } else {
+      val q = Question fromData form.data
+      request.body.asFormUrlEncoded.get("proc_q").headOption match {
+        case Some("save") => {
+          FileUtils.getExcelFilePath match {
+            case Success(path) => {
+              Try(ExcelUtil.ExcelReader(path)) match {
+                case Success(reader) => {
+                  reader.saveQuestion(questionNum, q)
+                  Redirect(routes.XLController.indexQuestions())
+                }
+                // TODO: log error
+                case _ => {
+                  println("logerror")
+                  Redirect(routes.XLController.indexQuestions())
+                }
+              }
+            }
+            case Failure(t) => {
+              t.printStackTrace()
+              Redirect(routes.XLController.indexQuestions())
+            }
+          }
+        }
 
-  def save(questionNum: Int) = Action { request =>
-    val re = request.body.asFormUrlEncoded.get("q_property").map(_.toString)
-    FileUtils.getExcelFilePath match {
-      case Success(path) => {
-        Try(ExcelUtil.ExcelReader(path)) match {
-//          case Success(reader) => reader.saveQuestion(questionNum, QUESTIONS(questionNum))
-          case Success(reader) => println("save")
-          // TODO: log error
-          case _ => println("logerror")
+        case Some("pick") => {
+          CachedQuestion.cache(Question fromData form.data)
+          Redirect(routes.WSController.index())
         }
       }
-      case Failure(t) => t.printStackTrace()
     }
 
-    Redirect(routes.XLController.indexQuestions())
-  }
-
-  def testFile = Action { request =>
-
-
-    //      if (path.nonEmpty) ExcelUtil.ExcelReader(path.get)
-    Redirect(routes.XLController.indexQuestions())
   }
 
   def openExcel: Option[File] = {

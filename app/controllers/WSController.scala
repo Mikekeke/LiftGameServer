@@ -1,19 +1,16 @@
 package controllers
 
-import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
 import javax.inject._
 
 import actors.{ImageActor, LiftWebSocketActor, SendActor}
 import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.Materializer
+import model.Question
 import model.api.{Api, ApiMessage}
-import model.{Question, TempHolder}
 import play.api.libs.json.Json
 import play.api.libs.streams._
-import play.api.mvc.WebSocket.MessageFlowTransformer
 import play.api.mvc._
+import utils.CachedQuestion
 
 /**
   * Created by Mikekeke on 30-Jan-17.
@@ -34,7 +31,13 @@ class WSController @Inject()
 //  }
 
   def index = Action {implicit request =>
-    Ok(views.html.index(currentQuestion.getOrElse("NOT SET")))
+
+    CachedQuestion.get match {
+      case Some(q) =>
+        Ok(views.html.index(q.toDescription))
+      case _ => Ok(views.html.index(Question.NOT_SET))
+    }
+
   }
 
   var sender: ActorRef = _
@@ -51,22 +54,15 @@ class WSController @Inject()
 
   def socket = socket1
 
-  def send(s: String) = Action {implicit request =>
-    sender ! ApiMessage(Api.Method.QUESTION, s)
+  def send = Action {implicit request =>
+    sender ! ApiMessage(Api.Method.QUESTION, Json.toJson(CachedQuestion.get.get).toString())
     Redirect(routes.WSController.index())
   }
 
-  val jsons: List[String] = TempHolder.questions.map(Json.toJson[Question]).map(_.toString())
   def pickQuestion = Action { implicit request =>
-    // TODO: put this back!!!
-//    sender ! ApiMessage(Api.Method.LOGO, "")
+    // TODO: NULL check or how to handle this??
+    sender ! ApiMessage(Api.Method.LOGO, "")
     Redirect(routes.XLController.indexQuestions())
-  }
-
-  var currentQuestion: Option [String] = None
-  def setQuestion(s: String) = Action { implicit request =>
-    currentQuestion = Some(s)
-    Redirect(routes.WSController.index())
   }
 
   def pickVariant() = Action {implicit request =>

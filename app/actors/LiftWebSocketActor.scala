@@ -1,7 +1,6 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, Props}
-import model.QMessage
 import model.api.ApiMessage
 
 /**

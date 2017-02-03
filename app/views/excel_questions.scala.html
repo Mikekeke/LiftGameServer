@@ -1,6 +1,6 @@
 @import model.Question
 @import froms.QForm
-@(filePath: String, questions: Seq[Question], qForm: Form[QForm])
+@(filePath: String, questions: Seq[Question], qForm: Form[QForm])(implicit messages: Messages)
 <!DOCTYPE html>
 
 <html>
@@ -11,6 +11,7 @@
         <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
     </head>
     <body>
+        <a href="@routes.WSController.index()">назад</a>
         <p>Excel questions</p>
         <p>@filePath</p>
 
@@ -18,23 +19,23 @@
             <button type="submit">Выбрать файл</button>
         }
 
-        @helper.form(action = routes.XLController.testFile()) {
-            <button type="submit">Test</button>
-        }
         @for(q <- questions) {
-            @helper.form(action = routes.XLController.save(questions.indexOf(q))) {
+            @helper.form(action = routes.XLController.saveOrPick(questions.indexOf(q))) {
                 <p>
-                    <textarea rows="2" name="q_property" cols="1" contenteditable="true">@q.num</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.name</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.question</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.variants("1").text</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.variants("2").text</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.variants("3").text</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.variants("4").text</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.correctVar</textarea>
-                    <textarea rows="2" name="q_property" contenteditable="true">@q.answer</textarea>
+                    <textarea rows="2" name="number" cols="1" contenteditable="true">@q.number</textarea>
+                    <textarea rows="2" name="name" contenteditable="true">@q.name</textarea>
+                    <textarea rows="2" name="question" contenteditable="true">@q.question</textarea>
+                    <textarea rows="2" name="v1" contenteditable="true">@q.variants("1")</textarea>
+                    <textarea rows="2" name="v2" contenteditable="true">@q.variants("2")</textarea>
+                    <textarea rows="2" name="v3" contenteditable="true">@q.variants("3")</textarea>
+                    <textarea rows="2" name="v4" contenteditable="true">@q.variants("4")</textarea>
+                    <textarea rows="2" name="v_corr" contenteditable="true">@q.correctVar</textarea>
+                    <textarea rows="2" name="answer" contenteditable="true">@q.answer</textarea>
+                    <textarea rows="2" name="status" contenteditable="true">@q.status</textarea>
+                    <br>
+                    <button type="submit" name = "proc_q" value="save">Сохранить</button>
+                    <button type="submit" name = "proc_q" value="pick">Выбрать</button>
                 </p>
-                <button type="submit">Сохранить</button>
             }
         }
     </body>

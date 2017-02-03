@@ -2,10 +2,8 @@ package utils
 
 import java.io.{File, FileInputStream, FileOutputStream}
 
-import model.{QStatus, Question, Variant}
-import org.apache.poi.ss.usermodel.{Cell, Row, Workbook, WorkbookFactory}
-
-import scala.collection.immutable.IndexedSeq
+import model.Question
+import org.apache.poi.ss.usermodel.{Row, WorkbookFactory}
 
 /**
   * Created by ibes on 02.02.17.
@@ -43,11 +41,11 @@ object ExcelUtil {
     }
 
     def getVariants(row: Row) = {
-      var variants = scala.collection.mutable.Map[String, Variant]()
+      var variants = scala.collection.mutable.Map[String, String]()
       var idx = 1
       for(i <- 3 to 6) {
         val str = row.getCell(i).getStringCellValue
-        variants += (idx.toString -> Variant(idx.toString, str))
+        variants += (idx.toString -> str)
         idx = idx + 1
       }
       variants.toMap
@@ -60,10 +58,10 @@ object ExcelUtil {
       val variants = getVariants(row)
       val correctVar = row.getCell(7).getNumericCellValue.toShort
       val answer = row.getCell(8).getStringCellValue
-      val status = QStatus.NDF
+      val status = row.getCell(9).getNumericCellValue.toInt
       val img1 = ""
       val img2 = ""
-      Question(num, name, question, variants, correctVar, answer, status, img1, img2)
+      Question(num, name, question, correctVar, answer, status, img1, img2, variants)
     }
   }
 
