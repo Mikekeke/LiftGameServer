@@ -1,7 +1,7 @@
 package actors
 
-import akka.actor.{Actor, ActorRef, Props}
-import model.api.ApiMessage
+import akka.actor.{Actor, ActorRef, PoisonPill, Props, Terminated}
+import model.api.{ApiMessage, Sender}
 
 /**
   * Created by Mikekeke on 30-Jan-17.
@@ -11,6 +11,21 @@ object LiftWebSocketActor {
 }
 
 class LiftWebSocketActor(out: ActorRef) extends Actor with akka.actor.ActorLogging{
+
+
+  @scala.throws[Exception](classOf[Exception])
+  override def preStart(): Unit = {
+    log.debug("Connected")
+    println("Connected")
+  }
+
+
+  @scala.throws[Exception](classOf[Exception])
+  override def postStop(): Unit = {
+    log.debug("Disconnected")
+    println("Disconnected")
+    Sender.kill
+  }
 
   def receive: PartialFunction[Any, Unit] = {
     case msg: String =>{
