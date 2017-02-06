@@ -1,4 +1,5 @@
 @import model.Question
+@import play.api.Logger
 @(questionString: String)
 
 <!DOCTYPE html>
@@ -12,6 +13,39 @@
     </head>
 
     <body>
+
+        <script type="text/javascript" >
+                var telSocket = new WebSocket("ws://192.168.2.40:9000/telemetry");
+
+                telSocket.onopen = function () {
+                };
+
+                telSocket.onclose = function (event) {
+//
+//                    if (event.wasClean) {
+//                        alert('Соединение закрыто чисто');
+//                    } else {
+//                        alert('Обрыв соединения'); // например, "убит" процесс сервера
+//                    }
+//                    alert('Код: ' + event.code + ' причина: ' + event.reason);
+                };
+
+                telSocket.onmessage = function (event) {
+                    if (event.data == "client_up") {
+                        document.getElementById("online").style.display = "block"
+                    }
+                    if (event.data == "client_down") {
+                        document.getElementById("online").style.display = "none"
+                    }
+
+                };
+
+                telSocket.onerror = function (error) {
+//                    alert("Ошибка " + error.message);
+                };
+
+        </script>
+
         <p>Test server</p>
         @helper.form(action = routes.WSController.pickQuestion()) {
             <input type="submit" value="Выбрать вопрос"/>
@@ -36,15 +70,31 @@
             @helper.form(action = routes.WSController.questionAction()) {
                 <button type="submit" name="qaction" value="check">Правлильный вариант</button>
                 <button type="submit" name="qaction" value="expand">Ответ развёрнутый</button>
+                <button type="submit" name="qaction" value="done">Вопрос сыграл</button>
             }
         }
 
-        @helper.form(action = routes.WSController.testScheduler()) {
-            <button type="submit" value="testsch">Test Screenshot</button>
-        }
-
-            @*<img src="@routes.Assets.at("images/screenshot.png")" />*@
+        @*<img src="@routes.Assets.at("images/screenshot.png")" />*@
 
 
-        </body>
+        @*<script type='text/javascript' src='@routes.Assets.at("lib/jquery/jquery.js")'></script>*@
+        @*<script type='text/javascript' src='@routes.Assets.at("lib/flot/jquery.flot.js")'></script>*@
+
+
+
+
+        <div style="display: none;">
+            JS buttons
+
+            <br>
+            <button onclick="telSocket.send('var_1');">JS Variant 1</button>
+            <button onclick="telSocket.send('var_2');">JS Variant 2</button>
+            <br>
+            <button onclick="telSocket.send('var_3');">JS Variant 3</button>
+            <button onclick="telSocket.send('var_4');">JS Variant 4</button>
+        </div>
+        <div id = "online" style="display: none">
+            Клиент Онлайн
+        </div>
+    </body>
 </html>

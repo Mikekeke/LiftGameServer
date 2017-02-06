@@ -5,6 +5,7 @@
 # Home page
 GET         /                       controllers.WSController.index
 GET         /socket                 controllers.WSController.socket
+GET         /telemetry              controllers.WSController.telemetry
 GET         /imgsocket              controllers.WSController.imgsocket
 POST        /send                   controllers.WSController.send
 POST        /question_action        controllers.WSController.questionAction

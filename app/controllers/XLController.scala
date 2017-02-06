@@ -1,8 +1,6 @@
 package controllers
 
 import java.io.File
-import java.lang.Exception
-import javafx.stage.FileChooser
 import javax.inject._
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -11,12 +9,10 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import froms.QForm
 import model.Question
-import model.api.{Api, ApiMessage}
-import play.api.data.Form
-import play.api.mvc._
-import utils.{CachedQuestion, ExcelUtil, FileUtils}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
+import play.api.mvc._
+import utils.{CachedQuestion, ExcelParser, FileUtils}
 
 import scala.util.{Failure, Success, Try}
 
@@ -31,22 +27,15 @@ class XLController @Inject()
   //  var file: Option[File] = None
   val excelExtFilter = new FileNameExtensionFilter("Excel", "xlsx")
 
-
-  var QUESTIONS: Seq[Question] = Seq.empty
+//  var QUESTIONS: Seq[Question] = Seq.empty
 
   def indexQuestions = Action { implicit request =>
-    FileUtils.getExcelFilePath match {
-      case Success(path) =>
-        Try(ExcelUtil.ExcelReader(path)) match {
-          case Success(reader) => {
-            QUESTIONS = reader.getQuestions
-            Ok(views.html.excel_questions(path, QUESTIONS, questionForm))
-          }
-          case Failure(e) =>
-            Ok(views.html.excel_questions(e.getMessage, QUESTIONS, questionForm))
-        }
-      case Failure(t) =>
-        Ok(views.html.excel_questions(t.getMessage, QUESTIONS, questionForm))
+    Try(ExcelParser.getQuestions) match {
+      case Success(questions) => {
+        Ok(views.html.excel_questions(ExcelParser.path, questions, questionForm))
+      }
+      case Failure(e) =>
+        Ok(views.html.excel_questions(e.getMessage, Seq.empty, questionForm))
     }
   }
 
@@ -56,13 +45,13 @@ class XLController @Inject()
     Redirect(routes.XLController.indexQuestions())
   }
 
-  import play.api.data._
   import play.api.data.Forms._
+  import play.api.data._
 
   val questionForm: Form[QForm] = Form(
     tuple(
       "number" -> number,
-      "name"-> text,
+      "name" -> text,
       "question" -> text,
       "v1" -> text,
       "v2" -> text,
@@ -70,7 +59,7 @@ class XLController @Inject()
       "v4" -> text,
       "v_corr" -> number,
       "answer" -> text,
-      "status" -> number
+      "status" -> text
     )
   )
 
@@ -83,34 +72,24 @@ class XLController @Inject()
       val q = Question fromData form.data
       request.body.asFormUrlEncoded.get("proc_q").headOption match {
         case Some("save") => {
-          FileUtils.getExcelFilePath match {
-            case Success(path) => {
-              Try(ExcelUtil.ExcelReader(path)) match {
-                case Success(reader) => {
-                  reader.saveQuestion(questionNum, q)
-                  Redirect(routes.XLController.indexQuestions())
-                }
-                // TODO: log error
-                case _ => {
-                  println("logerror")
-                  Redirect(routes.XLController.indexQuestions())
-                }
-              }
+          Try(ExcelParser.saveQuestion(questionNum, q)) match {
+            case Success(_) => {
+              Redirect(routes.XLController.indexQuestions())
             }
-            case Failure(t) => {
-              t.printStackTrace()
+            // TODO: log error
+            case _ => {
+              println("logerror")
               Redirect(routes.XLController.indexQuestions())
             }
           }
         }
 
         case Some("pick") => {
-          CachedQuestion.cache(Question fromData form.data)
+          CachedQuestion.cache(questionNum, Question fromData form.data)
           Redirect(routes.WSController.index())
         }
       }
     }
-
   }
 
   def openExcel: Option[File] = {

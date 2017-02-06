@@ -8,12 +8,10 @@ import play.mvc.BodyParser.AnyContent
   * Created by Mikekeke on 27-Jan-17.
   */
 case class Question(number: Int, name:String, question: String, correctVar: Int, answer: String,
-                    status: Int, img1: String = "", img2: String = "",
+                    status: String = Question.Status.NOT_ASKED,
+                    img1: String = "", img2: String = "",
                     variants: Map[String, String]) {
   require(variants.size == 4, s"Should be 4 variants, now ${variants.size}")
-
-
-
 
 
 //  def toExcelString: String = s"$num|$name|$question" +
@@ -40,6 +38,10 @@ case class Question(number: Int, name:String, question: String, correctVar: Int,
 
 object Question {
   val NOT_SET = "Не выбран"
+  object Status{
+    val ASKED = "задан"
+    val NOT_ASKED = "не задан"
+  }
   implicit val questionFormat: Format[Question] = Json.format[Question]
   def fromData(data: Map[String, String]): Question = Question(
     data("number").toInt,
@@ -47,7 +49,7 @@ object Question {
     data("question"),
     data("v_corr").toInt,
     data("answer"),
-    data("status").toInt,
+    data("status"),
     "",
     "",
     Map(
