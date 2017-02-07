@@ -15,7 +15,7 @@
         <p>Excel questions</p>
         <p>@filePath</p>
 
-        @helper.form(action = routes.XLController.openFile(), 'enctype -> "multipart/form-data") {
+        @helper.form(action = routes.XLController.uploadFile(), 'enctype -> "multipart/form-data") {
 
             <input type="file" name="excel">
             <input type="submit" value="Загрузить выбранный файл">

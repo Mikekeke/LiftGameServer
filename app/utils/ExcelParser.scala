@@ -33,7 +33,7 @@ object ExcelParser {
         sheet = wb.getSheetAt(0)
         rowsNum = sheet.getLastRowNum
         rows = for (i <- 0 to rowsNum) yield sheet.getRow(i)
-      case Failure(e) => throw new IllegalStateException("Путь до файла не найден")
+      case Failure(e) => throw new IllegalStateException("Файл не найден")
     }
   }
 

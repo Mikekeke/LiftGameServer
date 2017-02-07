@@ -9,10 +9,11 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import froms.QForm
 import model.Question
+import play.api.{Configuration, Play}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
-import utils.{CachedQuestion, ExcelParser, FileUtils}
+import utils.{CachedQuestion, ExcelParser, MyFileUtils}
 
 import scala.util.{Failure, Success, Try}
 
@@ -21,7 +22,8 @@ import scala.util.{Failure, Success, Try}
   */
 @Singleton
 class XLController @Inject()
-(implicit system: ActorSystem, materializer: Materializer)
+(implicit system: ActorSystem, materializer: Materializer,  configuration: Configuration,
+ fileUtil: MyFileUtils)
   extends Controller {
 
   //  var file: Option[File] = None
@@ -39,10 +41,26 @@ class XLController @Inject()
     }
   }
 
-  def openFile = Action { request =>
-    val file = openExcel
-    if (file.nonEmpty) FileUtils.persistExcelFilePath(file.get.getAbsolutePath)
-    Redirect(routes.XLController.indexQuestions())
+  def uploadFile = Action(parse.multipartFormData) { request =>
+    request.body.file("excel").map { excel =>
+      import java.io.File
+      val filename = excel.filename
+      if (filename.nonEmpty) {
+        val contentType = excel.contentType
+        configuration.getString("uploadDir") match {
+          case Some(path) =>
+            val file = new File(path, filename)
+            if (file.exists()) file.delete()
+            val result = excel.ref.moveTo(file)
+            // TODO: LOOK AT THIS SHIT!!!
+            !fileUtil.persistExcelFilePath(result.getAbsolutePath, path)
+        }
+      }
+      Redirect(routes.XLController.indexQuestions())
+    }.getOrElse {
+      Redirect(routes.XLController.indexQuestions()).flashing(
+        "error" -> "Missing file")
+    }
   }
 
   import play.api.data.Forms._
@@ -89,17 +107,6 @@ class XLController @Inject()
           Redirect(routes.WSController.index())
         }
       }
-    }
-  }
-
-  def openExcel: Option[File] = {
-    val chooser = new JFileChooser()
-    chooser.setDialogTitle("Выберите файл с вопросами")
-    chooser.setFileFilter(excelExtFilter)
-    chooser.showOpenDialog(null) match {
-      case JFileChooser.APPROVE_OPTION =>
-        Some(chooser.getSelectedFile)
-      case _ => None
     }
   }
 }
