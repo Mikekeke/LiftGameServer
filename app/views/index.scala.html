@@ -1,5 +1,6 @@
 @import model.Question
 @import play.api.Logger
+@import messages.ClientState
 @(questionString: String)(url: String)
 
 <!DOCTYPE html>
@@ -14,33 +15,38 @@
     <body>
 
         <script type="text/javascript" >
+
                 var telSocket = new WebSocket("@url");
 
                 telSocket.onopen = function () {
                 };
 
                 telSocket.onclose = function (event) {
-//
-//                    if (event.wasClean) {
-//                        alert('Соединение закрыто чисто');
-//                    } else {
-//                        alert('Обрыв соединения'); // например, "убит" процесс сервера
-//                    }
-//                    alert('Код: ' + event.code + ' причина: ' + event.reason);
+                    if (event.wasClean) {
+                        alert('Соединение закрыто чисто');
+                    } else {
+                        alert('Обрыв соединения');
+                    }
+                    alert('Код: ' + event.code + ' причина: ' + event.reason);
                 };
 
                 telSocket.onmessage = function (event) {
-                    if (event.data == "client_up") {
-                        document.getElementById("online").style.display = "block"
+                    var data = event.data;
+                    data = JSON.parse(data);
+                    if (data.state != undefined) {
+                        var state = data.state;
+                        if (state == "@ClientState.UP") {
+                            document.getElementById("online").style.display = "block"
+                        }
+                        if (state == "@ClientState.DOWN") {
+                            document.getElementById("online").style.display = "none";
+                            alert("Клиент отключился")
+                        }
                     }
-                    if (event.data == "client_down") {
-                        document.getElementById("online").style.display = "none"
-                    }
-
                 };
 
                 telSocket.onerror = function (error) {
-//                    alert("Ошибка " + error.message);
+                    alert("Ошибка " + error.message);
                 };
 
         </script>
