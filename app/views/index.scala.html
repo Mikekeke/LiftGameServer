@@ -1,6 +1,7 @@
 @import model.Question
-@import play.api.Logger
-@import messages.ClientState
+@import model.api.AdminMessage
+@import model.api.Api
+@import model.api.ClientState
 @(questionString: String)(url: String)
 
 <!DOCTYPE html>
@@ -22,16 +23,17 @@
                 };
 
                 telSocket.onclose = function (event) {
-                    if (event.wasClean) {
-                        alert('Соединение закрыто чисто');
-                    } else {
-                        alert('Обрыв соединения');
-                    }
-                    alert('Код: ' + event.code + ' причина: ' + event.reason);
+//                    if (event.wasClean) {
+//                        alert('Соединение закрыто чисто');
+//                    } else {
+//                        alert('Обрыв соединения');
+//                    }
+//                    alert('Код: ' + event.code + ' причина: ' + event.reason);
                 };
 
                 telSocket.onmessage = function (event) {
                     var data = event.data;
+//                    alert(data);
                     data = JSON.parse(data);
                     if (data.state != undefined) {
                         var state = data.state;
@@ -64,17 +66,22 @@
         <u>Текущий вопрос:</u>
         @questionString
         @if(!questionString.equals(Question.NOT_SET)) {
-            @helper.form(action = routes.WSController.pickVariant()) {
-                <button type="submit" name="send_variant" value="var_1">Variant 1</button>
-                <button type="submit" name="send_variant" value="var_2">Variant 2</button>
-                <br>
-                <button type="submit" name="send_variant" value="var_3">Variant 3</button>
-                <button type="submit" name="send_variant" value="var_4">Variant 4</button>
-            }
 
-            @helper.form(action = routes.WSController.questionAction()) {
-                <button type="submit" name="qaction" value="check">Правлильный вариант</button>
-                <button type="submit" name="qaction" value="expand">Ответ развёрнутый</button>
+            <div id="variant_buttons" style="display: block;">
+                <br>
+                <button onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">Вариант 1</button>
+                <button onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">Вариант 2</button>
+                <br>
+                <button onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">Вариант 3</button>
+                <button onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "4").toJson');">Вариант 4</button>
+            </div>
+
+            <div id="question-actions" style="display: block;">
+                <button onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">Правлильный вариант</button>
+                <button onclick="telSocket.send('@AdminMessage(Api.Method.EXPAND_ANSWER, "").toJson');">Ответ развёрнутый</button>
+            </div>
+
+            @helper.form(action = routes.WSController.questionDone()) {
                 <button type="submit" name="qaction" value="done">Вопрос сыграл</button>
             }
         }
@@ -82,16 +89,6 @@
 
         @*<script type='text/javascript' src='@routes.Assets.at("lib/jquery/jquery.js")'></script>*@
         @*<script type='text/javascript' src='@routes.Assets.at("lib/flot/jquery.flot.js")'></script>*@
-        <div style="display: none;">
-            JS buttons
-
-            <br>
-            <button onclick="telSocket.send('var_1');">JS Variant 1</button>
-            <button onclick="telSocket.send('var_2');">JS Variant 2</button>
-            <br>
-            <button onclick="telSocket.send('var_3');">JS Variant 3</button>
-            <button onclick="telSocket.send('var_4');">JS Variant 4</button>
-        </div>
         <div id = "online" style="display: none">
             Клиент Онлайн
         </div>

@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, Props}
-import model.api.ApiMessage
+import model.api.{AdminMessage, ApiMessage, ClientState}
 import play.api.Logger
 import utils.ActorHub
 
@@ -19,28 +19,27 @@ class ClientSocketActor(out: ActorRef) extends Actor with akka.actor.ActorLoggin
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
     Logger.info("Client connected")
-    ActorHub initClient self
-    ActorHub reportClientUp
+    ActorHub initClientMessaging self
+    ActorHub sendToAdmin ClientState(ClientState.UP)
   }
-
 
   @scala.throws[Exception](classOf[Exception])
   override def postStop(): Unit = {
     Logger.info("Client disconnected")
     ActorHub.onClientClosed
-    ActorHub reportClientDown
+    ActorHub sendToAdmin ClientState(ClientState.DOWN)
   }
 
   def receive: PartialFunction[Any, Unit] = {
     case msg: String =>{
-      log.debug("Got string")
-      out ! ("LiftWebSocketActor: received your message: " + msg)
+      out ! ("Server received your message: " + msg)
+      Logger.warn(s"${this.getClass.getSimpleName} got string: $msg")
 //      Sender sendTelemetry msg
     }
     case mes: ApiMessage => {
-      log.debug("Got ApiMessage")
       out ! mes.body
     }
-    case other => out ! "Got something"
+    case other =>
+      Logger.warn(s"This came to ${this.getClass.getSimpleName}: $other")
   }
 }

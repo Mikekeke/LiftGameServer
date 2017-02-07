@@ -1,47 +1,30 @@
 package utils
 import akka.actor.ActorRef
-import messages.{ClientState}
-import model.api.ApiMessage
+import model.api.{ApiMessage, ClientState}
 import play.api.Logger
 /**
   * Created by ibes on 06.02.17.
   */
 object ActorHub {
 
-  private var senderRef: Option[ActorRef] = None
-  private var telemetryRef: Option[ActorRef] = None
-  def initClient(ref: ActorRef): Unit = senderRef = Some(ref)
-  def onClientClosed : Unit = senderRef = None
-  def clientIsUp = senderRef.nonEmpty
+  private var clientsRef: Option[ActorRef] = None
+  private var adminsRef: Option[ActorRef] = None
+  def initClientMessaging(ref: ActorRef): Unit = clientsRef = Some(ref)
+  def initAdminMessaging(ref: ActorRef): Unit = adminsRef = Some(ref)
 
-  def send(apiMessage: ApiMessage): Unit =
-    if (senderRef.nonEmpty) senderRef.get ! apiMessage
-    else {
-      Logger.warn("no client connected")
-    }
+    def onClientClosed : Unit = clientsRef = None
 
-  def send(msg: String): Unit =
-    if (senderRef.nonEmpty) senderRef.get ! msg else Logger.warn("no client connected")
+    def clientIsUp: Boolean = clientsRef.nonEmpty
 
-  def initTelemetry(ref: ActorRef): Unit = telemetryRef = Some(ref)
-  def sendTelemetry(apiMessage: String): Unit =
-    if (telemetryRef.nonEmpty) telemetryRef.get ! apiMessage
-    else {
-      Logger.warn("Telemetry down")
-    }
+    def sendToClient(apiMessage: ApiMessage): Unit =
+    if (clientsRef.nonEmpty) clientsRef.get ! apiMessage else Logger.warn("no client connected")
 
-  def reportClientUp = {
-    if (telemetryRef.nonEmpty) telemetryRef.get ! ClientState(ClientState.UP)
-    else {
-      Logger.warn("Telemetry down")
-    }
-  }
+    def sendToClient(msg: String): Unit =
+    if (clientsRef.nonEmpty) clientsRef.get ! msg else Logger.warn("no client connected")
 
-  def reportClientDown = {
-    if (telemetryRef.nonEmpty) telemetryRef.get ! ClientState(ClientState.DOWN)
-    else {
-      Logger.warn("Telemetry down")
-    }
-  }
+    def sendToAdmin(apiMessage: String): Unit =
+    if (adminsRef.nonEmpty) adminsRef.get ! apiMessage else Logger.warn("No admin connected")
 
+  def sendToAdmin(clientState: ClientState): Unit =
+    if (adminsRef.nonEmpty) adminsRef.get ! clientState else Logger.warn("No admin connected")
 }

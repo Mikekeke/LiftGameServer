@@ -8,9 +8,9 @@ GET         /clientSocket                 controllers.WSController.clientSocket
 GET         /adminSocket              controllers.WSController.adminSocket
 GET         /imgsocket              controllers.WSController.imgsocket
 POST        /send                   controllers.WSController.send
-POST        /question_action        controllers.WSController.questionAction
+POST        /question_done        controllers.WSController.questionDone
 POST        /pick_question          controllers.WSController.pickQuestion
-POST        /pick_variant           controllers.WSController.pickVariant
+#POST        /pick_variant           controllers.WSController.pickVariant
 POST        /test_sch               controllers.WSController.testScheduler
 GET         /questions              controllers.XLController.indexQuestions
 GET         /open_file              controllers.XLController.openFile
