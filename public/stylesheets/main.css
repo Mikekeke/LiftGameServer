@@ -1,3 +1,8 @@
 textarea {
     resize: none;
+    display:block;
+}
+label{
+    font-size: small;
+    display:inline-block;
 }

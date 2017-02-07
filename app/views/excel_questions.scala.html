@@ -15,27 +15,31 @@
         <p>Excel questions</p>
         <p>@filePath</p>
 
-        @helper.form(action = routes.XLController.openFile()) {
-            <button type="submit">Выбрать файл</button>
+        @helper.form(action = routes.XLController.openFile(), 'enctype -> "multipart/form-data") {
+
+            <input type="file" name="excel">
+            <input type="submit" value="Загрузить выбранный файл">
+
         }
 
         @for(q <- questions) {
             @helper.form(action = routes.XLController.saveOrPick(questions.indexOf(q))) {
-                <p>
-                    <textarea rows="2" name="number" cols="1" contenteditable="true">@q.number</textarea>
-                    <textarea rows="2" name="name" contenteditable="true">@q.name</textarea>
-                    <textarea rows="2" name="question" contenteditable="true">@q.question</textarea>
-                    <textarea rows="2" name="v1" contenteditable="true">@q.variants("1")</textarea>
-                    <textarea rows="2" name="v2" contenteditable="true">@q.variants("2")</textarea>
-                    <textarea rows="2" name="v3" contenteditable="true">@q.variants("3")</textarea>
-                    <textarea rows="2" name="v4" contenteditable="true">@q.variants("4")</textarea>
-                    <textarea rows="2" name="v_corr" contenteditable="true">@q.correctVar</textarea>
-                    <textarea rows="2" name="answer" contenteditable="true">@q.answer</textarea>
-                    <textarea rows="2" name="status" contenteditable="true">@q.status</textarea>
+                <li style="list-style-type:none">
+                    <label>№<textarea id="number" rows="2" name="number" cols="1" contenteditable="true">@q.number</textarea></label>
+                    <label>Название<textarea rows="2" name="name" contenteditable="true">@q.name</textarea></label>
+                    <label>Вопрос<textarea rows="2" name="question" contenteditable="true">@q.question</textarea></label>
+                    <label>Вариант 1<textarea rows="2" name="v1" contenteditable="true">@q.variants("1")</textarea></label>
+                    <label>Вариант 2<textarea rows="2" name="v2" contenteditable="true">@q.variants("2")</textarea></label>
+                    <label>Вариант 3<textarea rows="2" name="v3" contenteditable="true">@q.variants("3")</textarea></label>
+                    <label>Вариант 4<textarea rows="2" name="v4" contenteditable="true">@q.variants("4")</textarea></label>
+                    <br>
+                    <label>Правильный вариант<textarea rows="2" name="v_corr" contenteditable="true">@q.correctVar</textarea></label>
+                    <label>Ответ<textarea rows="2" name="answer" contenteditable="true">@q.answer</textarea></label>
+                    <label>Сатус<textarea rows="2" name="status" contenteditable="true">@q.status</textarea></label>
                     <br>
                     <button type="submit" name = "proc_q" value="save">Сохранить</button>
                     <button type="submit" name = "proc_q" value="pick">Выбрать</button>
-                </p>
+                </li>
             }
         }
     </body>

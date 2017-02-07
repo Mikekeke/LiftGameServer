@@ -9,7 +9,7 @@ import scala.util.Try
   * Created by ibes on 02.02.17.
   */
 object FileUtils {
-  private  val PATH = "public/persist/excel.path"
+  private  val PATH = "conf/excel.path"
   def persistExcelFilePath(path: String): Unit = {
     val pw = new PrintWriter(new File(PATH))
     pw.write(path)

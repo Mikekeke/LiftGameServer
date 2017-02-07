@@ -1,0 +1,17 @@
+@(error: String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Ошибка</title>
+        <a href="@routes.XLController.indexQuestions()">назад</a>
+        <br>
+        @error
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/elevico.png")">
+    </head>
+    <body>
+
+    </body>
+</html>

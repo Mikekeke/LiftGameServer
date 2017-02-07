@@ -22,18 +22,25 @@ object ExcelParser {
   private var filePath: String = _
 
   private def init(): Unit = {
-    if (in == null || wb == null || filePath == null) {
-      FileUtils.getExcelFilePath match {
-        case Success(path) =>
-          filePath = path.ensuring(path.nonEmpty, "File path is empty")
-          require(new File(filePath).exists(), s"File at path $filePath not found")
-          in = new FileInputStream(path)
-          wb = WorkbookFactory.create(in)
-          sheet = wb.getSheetAt(0)
-          rowsNum = sheet.getLastRowNum
-          rows = for (i <- 0 to rowsNum) yield sheet.getRow(i)
-        case Failure(e) => throw new IllegalStateException(e)
-      }
+
+    FileUtils.getExcelFilePath match {
+      case Success(path) =>
+        filePath = path.ensuring(path.nonEmpty, "File path is empty")
+        require(new File(filePath).exists(), s"Файл не найден")
+        in = new FileInputStream(path)
+        // Need to re-initialize WorkBook on every write, or writing will destroy excel file
+        wb = WorkbookFactory.create(in)
+        sheet = wb.getSheetAt(0)
+        rowsNum = sheet.getLastRowNum
+        rows = for (i <- 0 to rowsNum) yield sheet.getRow(i)
+      case Failure(e) => throw new IllegalStateException("Путь до файла не найден")
+    }
+  }
+
+  def finish = {
+    // Coz need to re-initialize WorkBook on every write, or writing will destroy excel file
+    if (in == null) {
+      in.close()
     }
   }
 
@@ -46,11 +53,14 @@ object ExcelParser {
     question toRow row
     wb.write(out)
     out.close()
+    finish
   }
 
   def getQuestions: Seq[Question] = {
     init()
-    rows.drop(1).map(row => toQuestion(row)).filterNot(_.status == Question.Status.ASKED)
+    val result = rows.drop(1).map(row => toQuestion(row)).filterNot(_.status == Question.Status.ASKED)
+    finish
+    result
   }
 
   def makeAskedQuestionNumber(qNum: Int): Unit = {
@@ -60,6 +70,7 @@ object ExcelParser {
     row.getCell(statusCell, Row.CREATE_NULL_AS_BLANK).setCellValue(Question.Status.ASKED)
     wb.write(out)
     out.close()
+    finish
   }
 
   private def getVariants(row: Row) = {
