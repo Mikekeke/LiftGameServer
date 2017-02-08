@@ -17,16 +17,16 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
     <body>
-        <p>Test Admin</p>
+        <span id="test_admin">Test Admin</span>
+
 
         @helper.form(action = routes.WSController.pickQuestion()) {
-            <button class="btn waves-effect waves-light" type="submit" name="action">Выбрать вопрос
+            <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Выбрать вопрос
             </button>
         }
-        <br>
         @if(!questionString.equals(Question.NOT_SET)) {
             @helper.form(action = routes.WSController.send) {
-                <button class="btn waves-effect waves-light" type="submit" name="action">Задать
+                <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Задать
                     <i class="material-icons right">send</i>
                 </button>
             }
@@ -37,36 +37,36 @@
                 @s <br>
             }
         </div>
-
-        <br>
         <label id="picked_variant" style="font-size: medium"></label>
         <label id="check" style="font-size: medium"></label>
+        <br>
         @if(!questionString.equals(Question.NOT_SET)) {
 
+            <label for="variant_buttons" style="margin-left: 10px">Выбор варианта ведущим:</label>
             <div id="variant_buttons" style="display: block;">
                 <br>
-                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
+                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
                     Вариант 1
                 </a>
-                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
+                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
                     Вариант 2
                 </a>
                 <br>
-                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">
+                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">
                     Вариант 3</a>
-                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "4").toJson');">
+                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "4").toJson');">
                     Вариант 4</a>
             </div>
 
             <div id="question-actions" style="display: block;">
-                <button class="btn waves-effect waves-light" onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">
                     Правлильный вариант</button>
-                <button class="btn waves-effect waves-light" onclick="telSocket.send('@AdminMessage(Api.Method.EXPAND_ANSWER, "").toJson');">
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.EXPAND_ANSWER, "").toJson');">
                     Ответ развёрнутый</button>
             </div>
 
             @helper.form(action = routes.WSController.questionDone()) {
-                <button class="btn waves-effect waves-light" type="submit" name="qaction" value="done">Вопрос сыграл</button>
+                <button class="btn waves-effect waves-light my_btn" type="submit" name="qaction" value="done">Вопрос сыграл</button>
             }
         }
         @*<img src="@routes.Assets.at("images/screenshot.png")" />*@

@@ -1,8 +1,6 @@
 textarea {
     resize: none;
     display:block;
-    color: #8b1014;
-    text-decoration-color: #8b1014;
 }
 label{
     font-size: small;
@@ -14,6 +12,8 @@ label{
     color: #000000;
 }
 #picked_variant {
+    margin-top: 5px;
+    margin-left: 10px;
     color: #219ac9
 }
 /*#check {*/
@@ -21,6 +21,8 @@ label{
 /*}*/
 
 #question {
+    margin-left: 10px;
+    font-size: medium;
     background: #b7ebff;
     width: 30%;
 }
@@ -41,4 +43,21 @@ label{
     position: absolute;
     top:0;
     right: 0;
+}
+#test_admin {
+    font-size: large;
+    margin: 10px;
+}
+
+.my_btn {
+    margin: 10px;
+ }
+.var_btn {
+    color: #3f51b5;
+}
+
+#variant_buttons {
+    border: solid 2px cadetblue;
+    width: 40%;
+
 }
