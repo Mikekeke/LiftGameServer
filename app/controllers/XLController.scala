@@ -100,7 +100,6 @@ class XLController @Inject()
             }
           }
         }
-
         case Some("pick") => {
           CachedQuestion.cache(questionNum, Question fromData form.data)
           Redirect(routes.WSController.index())

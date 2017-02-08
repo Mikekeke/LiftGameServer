@@ -11,6 +11,9 @@ object Api {
     val LOGO = "logo"
     val PICK_VARIANT = "pick_variant"
     val PING = "PING!"
+    val TIMER_START = "TIMER_START"
+    val TIMER_STOP = "TIMER_STOP"
+    val TIMER_RESET = "TIMER_RESET"
   }
 
 }

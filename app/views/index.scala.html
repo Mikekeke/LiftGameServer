@@ -43,8 +43,7 @@
         @if(!questionString.equals(Question.NOT_SET)) {
 
             <label for="variant_buttons" style="margin-left: 10px">Выбор варианта ведущим:</label>
-            <div id="variant_buttons" style="display: block;">
-                <br>
+            <div id="variant_buttons" class="labeled_buttons" style="display: block;">
                 <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
                     Вариант 1
                 </a>
@@ -58,16 +57,26 @@
                     Вариант 4</a>
             </div>
 
+
+
             <div id="question-actions" style="display: block;">
                 <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">
-                    Правлильный вариант</button>
+                    Правильный вариант</button>
                 <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.EXPAND_ANSWER, "").toJson');">
                     Ответ развёрнутый</button>
+                @helper.form(action = routes.WSController.questionDone()) {
+                    <button class="btn waves-effect waves-light my_btn" type="submit" name="qaction" value="done">Вопрос сыграл</button>
+                }
             </div>
-
-            @helper.form(action = routes.WSController.questionDone()) {
-                <button class="btn waves-effect waves-light my_btn" type="submit" name="qaction" value="done">Вопрос сыграл</button>
-            }
+            <label id = "timer_label" for="timer_buttons" style="margin-left: 10px">Таймер:</label>
+            <div id="timer_buttons" class="labeled_buttons" style="display: block;">
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_START, "").toJson');">
+                    СТАРТ</button>
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_STOP, "").toJson');">
+                    СТОП</button>
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_RESET, "").toJson');">
+                    СБРОС</button>
+            </div>
         }
         @*<img src="@routes.Assets.at("images/screenshot.png")" />*@
 
@@ -122,7 +131,7 @@
                         if (check.includes("Ошибка")) {
                             document.getElementById("check").style.color = "red"
                         }
-                        document.getElementById("check").innerHTML = " --> " + data.check;
+                        document.getElementById("check").innerHTML = " >>> " + data.check;
                     }
                 };
 
