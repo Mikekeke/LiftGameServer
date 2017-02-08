@@ -20,7 +20,7 @@ class AdminSocketActor(out: ActorRef) extends Actor {
   override def preStart(): Unit = {
     Logger.info("Telemetry client connected")
     ActorHub.initAdminMessaging(self)
-    if (ActorHub.clientIsUp) self ! CLIENT_UP
+    if (ActorHub.clientIsUp) self ! ClientState(ClientState.UP)
   }
 
   @scala.throws[Exception](classOf[Exception])

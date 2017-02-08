@@ -10,6 +10,7 @@ object Api {
     val EXPAND_ANSWER = "expand_answer"
     val LOGO = "logo"
     val PICK_VARIANT = "pick_variant"
+    val PING = "PING!"
   }
 
 }

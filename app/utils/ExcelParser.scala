@@ -59,7 +59,8 @@ class ExcelParser @Inject()(fileUtils: FileUtils){
 
   def getQuestions: Seq[Question] = {
     init()
-    val result = rows.drop(1).map(row => toQuestion(row)).filterNot(_.status == Question.Status.ASKED)
+//    val result = rows.drop(1).map(row => toQuestion(row)).filterNot(_.status == Question.Status.ASKED)
+    val result = rows.drop(1).map(row => toQuestion(row))
     finish
     result
   }
@@ -67,7 +68,7 @@ class ExcelParser @Inject()(fileUtils: FileUtils){
   def makeAskedQuestionNumber(qNum: Int): Unit = {
     init()
     val out = new FileOutputStream(filePath)
-    val row = sheet.getRow(qNum + 1)
+    val row = sheet.getRow(qNum+1)
     row.getCell(statusCell, Row.CREATE_NULL_AS_BLANK).setCellValue(Question.Status.ASKED)
     wb.write(out)
     out.close()

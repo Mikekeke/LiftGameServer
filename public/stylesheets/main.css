@@ -1,8 +1,15 @@
 textarea {
     resize: none;
     display:block;
+    color: #8b1014;
+    text-decoration-color: #8b1014;
 }
 label{
     font-size: small;
     display:inline-block;
+}
+
+.q_text {
+    border: solid 2px #939393;
+    color: #000000;
 }
