@@ -18,7 +18,9 @@ case class Question(number: Int, name:String, question: String, correctVar: Int,
 //    s"|${variants("1")}|${variants("2")}|${variants("3")}|${variants("4")}" +
 //    s"|$answer|${status.value}|$img1|$img2"
 
-  def toDescription = s"№ $number - $name: $question"
+  def toDescription = s"№ $number - $name: $question &&" +
+    s"Ответ: $answer&&" +
+    s"Правильный вариант: №$correctVar - ${variants(correctVar.toString)}"
 
   def toRow(row: Row) = {
     row.getCell(0, Row.CREATE_NULL_AS_BLANK).setCellValue(number)

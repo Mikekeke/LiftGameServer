@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, Props}
-import model.api.{AdminMessage, ApiMessage, ClientState}
+import model.api._
 import play.api.Logger
 import utils.ActorHub
 
@@ -32,7 +32,13 @@ class ClientSocketActor(out: ActorRef) extends Actor with akka.actor.ActorLoggin
 
   def receive: PartialFunction[Any, Unit] = {
     case msg: String =>{
-      out ! ("Server received your message: " + msg)
+      if (msg.startsWith("telemetry-")) {
+        ActorHub sendTelemetry Telemetry(msg.substring("telemetry-".length, msg.length))
+      } else if (msg.startsWith("check-")){
+        ActorHub sendCheck Check(msg.substring("check-".length, msg.length))
+      } else {
+        out ! ("Server received your message: " + msg)
+      }
       Logger.warn(s"${this.getClass.getSimpleName} got string: $msg")
 //      Sender sendTelemetry msg
     }

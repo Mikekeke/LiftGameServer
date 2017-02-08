@@ -13,3 +13,32 @@ label{
     border: solid 2px #939393;
     color: #000000;
 }
+#picked_variant {
+    color: #219ac9
+}
+/*#check {*/
+    /*color: #c94344*/
+/*}*/
+
+#question {
+    background: #b7ebff;
+    width: 30%;
+}
+
+#online {
+    align-content: center;
+    background: greenyellow;
+    width: 17ex;
+    position: absolute;
+    top:0;
+    right: 0;
+}
+
+#offline {
+    align-content: center;
+    background: red;
+    width: 17ex;
+    position: absolute;
+    top:0;
+    right: 0;
+}

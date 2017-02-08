@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.{Actor, ActorRef, Props}
-import model.api.{AdminMessage, Api, ApiMessage, ClientState}
+import model.api._
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import utils.ActorHub
@@ -14,22 +14,24 @@ object AdminSocketActor {
 
 class AdminSocketActor(out: ActorRef) extends Actor {
 
-  import ClientSocketActor._
 
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
-    Logger.info("Telemetry client connected")
+    Logger.info("Admin connected")
     ActorHub.initAdminMessaging(self)
     if (ActorHub.clientIsUp) self ! ClientState(ClientState.UP)
+    else self ! ClientState(ClientState.DOWN)
   }
 
   @scala.throws[Exception](classOf[Exception])
   override def postStop(): Unit = {
-    Logger.info("Telemetry client disconnected")
+    Logger.info("Admin disconnected")
   }
 
   override def receive: Receive = {
+    case check: Check => out ! check.toJson
     case state: ClientState => out ! state.toJson
+    case tel: Telemetry => out ! tel.toJson
     case jsObject: JsObject =>
       Try(AdminMessage.fromJson(jsObject)) match {
         case Success(message) =>

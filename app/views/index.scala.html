@@ -17,8 +17,6 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
     <body>
-
-
         <p>Test Admin</p>
 
         @helper.form(action = routes.WSController.pickQuestion()) {
@@ -33,18 +31,25 @@
                 </button>
             }
         }
+        <div id="question">
+            <u>Текущий вопрос:</u><br>
+            @questionString.split("&&").map { s =>
+                @s <br>
+            }
+        </div>
 
         <br>
-        <u>Текущий вопрос:</u>
-        @questionString
-        <br>
+        <label id="picked_variant" style="font-size: medium"></label>
+        <label id="check" style="font-size: medium"></label>
         @if(!questionString.equals(Question.NOT_SET)) {
 
             <div id="variant_buttons" style="display: block;">
                 <br>
-                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">Вариант 1
+                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
+                    Вариант 1
                 </a>
-                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">Вариант 2
+                <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
+                    Вариант 2
                 </a>
                 <br>
                 <a class="waves-effect waves-light btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">
@@ -54,7 +59,8 @@
             </div>
 
             <div id="question-actions" style="display: block;">
-                <button class="btn waves-effect waves-light" onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">Правлильный вариант</button>
+                <button class="btn waves-effect waves-light" onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">
+                    Правлильный вариант</button>
                 <button class="btn waves-effect waves-light" onclick="telSocket.send('@AdminMessage(Api.Method.EXPAND_ANSWER, "").toJson');">
                     Ответ развёрнутый</button>
             </div>
@@ -67,14 +73,16 @@
 
         @*<script type='text/javascript' src='@routes.Assets.at("lib/jquery/jquery.js")'></script>*@
         @*<script type='text/javascript' src='@routes.Assets.at("lib/flot/jquery.flot.js")'></script>*@
+        <br>
         <div id = "online" style="display: none">
-            Клиент Онлайн
+            &nbsp&nbspКлиент Онлайн
+        </div>
+        <div id = "offline" style="display: none">
+            &nbspКлиент Оффлайн
         </div>
 
         <script type="text/javascript" >
-
                 var telSocket = new WebSocket("@url");
-
                 telSocket.onopen = function () {
                 };
 
@@ -94,12 +102,27 @@
                     if (data.state != undefined) {
                         var state = data.state;
                         if (state == "@ClientState.UP") {
-                            document.getElementById("online").style.display = "block"
+                            document.getElementById("online").style.display = "block";
+                            document.getElementById("offline").style.display = "none";
                         }
                         if (state == "@ClientState.DOWN") {
                             document.getElementById("online").style.display = "none";
-                            alert("Клиент отключился")
+                            document.getElementById("offline").style.display = "block";
                         }
+                    }
+                    if (data.variant != undefined) {
+                        document.getElementById("picked_variant").innerHTML = "Выбран вариант " + data.variant;
+                    }
+
+                    if (data.check != undefined) {
+                        var check = data.check;
+                        if (check.includes("Правильно")) {
+                            document.getElementById("check").style.color = "forestgreen"
+                        }
+                        if (check.includes("Ошибка")) {
+                            document.getElementById("check").style.color = "red"
+                        }
+                        document.getElementById("check").innerHTML = " --> " + data.check;
                     }
                 };
 

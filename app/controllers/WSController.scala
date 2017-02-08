@@ -28,7 +28,8 @@ class WSController @Inject()
     CachedQuestion.get match {
       case Some(q) =>
         Ok(views.html.index(q.toDescription)(url))
-      case _ => Ok(views.html.index(Question.NOT_SET)(url))
+      case _ =>
+        Ok(views.html.index(Question.NOT_SET)(url))
     }
   }
 
@@ -82,7 +83,7 @@ class WSController @Inject()
     //    system.scheduler.schedule(Duration(0, TimeUnit.SECONDS), Duration(2, TimeUnit.SECONDS)) {
     //      sender ! "give image"
     //    }
-    ActorHub sendToAdmin "give image"
+//    ActorHub sendToAdmin "give image"
     Redirect(routes.WSController.index())
   }
 
