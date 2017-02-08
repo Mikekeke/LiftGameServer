@@ -13,7 +13,7 @@ import play.api.{Configuration, Play}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
-import utils.{CachedQuestion, ExcelParser, MyFileUtils}
+import utils.{CachedQuestion, ExcelParser, FileUtils}
 
 import scala.util.{Failure, Success, Try}
 
@@ -23,7 +23,7 @@ import scala.util.{Failure, Success, Try}
 @Singleton
 class XLController @Inject()
 (implicit system: ActorSystem, materializer: Materializer,  configuration: Configuration,
- fileUtil: MyFileUtils)
+ fileUtil: FileUtils, excelParser: ExcelParser)
   extends Controller {
 
   //  var file: Option[File] = None
@@ -32,9 +32,9 @@ class XLController @Inject()
 //  var QUESTIONS: Seq[Question] = Seq.empty
 
   def indexQuestions = Action { implicit request =>
-    Try(ExcelParser.getQuestions) match {
+    Try(excelParser.getQuestions) match {
       case Success(questions) => {
-        Ok(views.html.excel_questions(ExcelParser.path, questions, questionForm))
+        Ok(views.html.excel_questions(excelParser.path, questions, questionForm))
       }
       case Failure(e) =>
         Ok(views.html.excel_questions(e.getMessage, Seq.empty, questionForm))
@@ -52,8 +52,7 @@ class XLController @Inject()
             val file = new File(path, filename)
             if (file.exists()) file.delete()
             val result = excel.ref.moveTo(file)
-            // TODO: LOOK AT THIS SHIT!!!
-            !fileUtil.persistExcelFilePath(result.getAbsolutePath, path)
+            fileUtil.persistExcelFilePath(result.getAbsolutePath)
         }
       }
       Redirect(routes.XLController.indexQuestions())
@@ -90,7 +89,7 @@ class XLController @Inject()
       val q = Question fromData form.data
       request.body.asFormUrlEncoded.get("proc_q").headOption match {
         case Some("save") => {
-          Try(ExcelParser.saveQuestion(questionNum, q)) match {
+          Try(excelParser.saveQuestion(questionNum, q)) match {
             case Success(_) => {
               Redirect(routes.XLController.indexQuestions())
             }

@@ -1,14 +1,15 @@
 package utils
 
 import java.io.{File, FileInputStream, FileOutputStream}
+import javax.inject._
 
 import model.Question
 import org.apache.poi.ss.usermodel.{Row, Sheet, Workbook, WorkbookFactory}
 
 import scala.collection.immutable.Seq
-import scala.util.{Failure, Success, Try}
-
-object ExcelParser {
+import scala.util.{Failure, Success}
+@Singleton
+class ExcelParser @Inject()(fileUtils: FileUtils){
   private val cellsQuantity: Int = 12 - 1
   private val statusCell = 9
   // TODO: push Fileobject here
@@ -23,7 +24,7 @@ object ExcelParser {
 
   private def init(): Unit = {
 
-    FileUtils.getExcelFilePath match {
+    fileUtils.getExcelFilePath match {
       case Success(path) =>
         filePath = path.ensuring(path.nonEmpty, "File path is empty")
         require(new File(filePath).exists(), s"Файл не найден")

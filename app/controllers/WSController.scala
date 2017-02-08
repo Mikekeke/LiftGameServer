@@ -20,7 +20,7 @@ import scala.util.{Failure, Success, Try}
   */
 @Singleton
 class WSController @Inject()
-(implicit system: ActorSystem, materializer: Materializer)
+(implicit system: ActorSystem, materializer: Materializer, excelParser: ExcelParser)
   extends Controller {
 
   def index = Action { implicit request =>
@@ -69,7 +69,7 @@ class WSController @Inject()
   }
 
   def makeQuestionAsked(qNum: Int) = {
-    Try(ExcelParser.makeAskedQuestionNumber(qNum)) match {
+    Try(excelParser.makeAskedQuestionNumber(qNum)) match {
       case Success(any) =>
         Logger.info(s"Question -${CachedQuestion.get.get.name}- with number = $qNum now ASKED")
       case Failure(e) =>

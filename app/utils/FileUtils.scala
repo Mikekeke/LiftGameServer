@@ -12,9 +12,10 @@ import scala.util.Try
   */
 import javax.inject._
 @Singleton
-class MyFileUtils @Inject()(configuration: Configuration) {
-  private  val PATH = s"${configuration.getString("uploadDir")}/excel.path"
-  def persistExcelFilePath(path: String, dir: String): Unit = {
+class FileUtils @Inject()(configuration: Configuration) {
+  private  val PATH: String = s"${configuration.getString("uploadDir")
+    .getOrElse(throw new NoSuchElementException("Cant find path in config"))}/excel.path"
+  def persistExcelFilePath(path: String): Unit = {
     val pw = new PrintWriter(new File(PATH))
     pw.write(path)
     pw.close()
