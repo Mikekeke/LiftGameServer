@@ -1,23 +1,26 @@
 textarea {
     resize: none;
-    display:block;
+    display: block;
 }
-label{
+
+label {
     font-size: small;
-    display:inline-block;
+    display: inline-block;
 }
 
 .q_text {
     border: solid 2px #939393;
     color: #000000;
 }
+
 #picked_variant {
     margin-top: 5px;
     margin-left: 10px;
     color: #219ac9
 }
+
 /*#check {*/
-    /*color: #c94344*/
+/*color: #c94344*/
 /*}*/
 
 #question {
@@ -33,7 +36,7 @@ label{
     background: greenyellow;
     width: 17ex;
     position: absolute;
-    top:0;
+    top: 0;
     right: 0;
 }
 
@@ -42,9 +45,10 @@ label{
     background: red;
     width: 17ex;
     position: absolute;
-    top:0;
+    top: 0;
     right: 0;
 }
+
 #test_admin {
     font-size: large;
     margin: 10px;
@@ -52,27 +56,39 @@ label{
 
 .my_btn {
     margin: 10px;
- }
+}
+
 .var_btn {
     color: #3f51b5;
     width: 45%;
     height: 45%;
 }
+
 .prev_button {
     width: 40ex;
+}
+
+.var_in_preview {
+    color: black;
+    margin: 2px;
+    width: 20ex;
+    height: 5ex;
+    border: solid 2px #909090;
+    font-size: medium;
 }
 
 .framed {
     border: solid 2px cadetblue;
 }
+
 #variant_div {
 
 }
+
 #variant_buttons {
     width: 100%;
     float: right;
 }
-
 
 #timer_buttons {
     display: table-column;
@@ -88,19 +104,23 @@ label{
     float: left;
     width: 70%;
 }
+
 #preview_buttons {
     float: left;
     width: 50%;
 }
+
 #question_preview {
     float: left;
     width: 50%;
-}.framed
+}
 
+.framed
 #question_view {
     align-content: center;
     align-items: center;
 }
+
 #control_block {
     height: 55ex;
     margin-top: 4ex;
@@ -112,8 +132,6 @@ label{
     float: right;
     height: 54ex;
 }
-
-
 
 #client_screen {
     margin-top: 4ex;

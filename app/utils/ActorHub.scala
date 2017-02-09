@@ -43,4 +43,10 @@ object ActorHub {
   def sendTQuestion(tQuestion: TQuestion): Unit =
     if (adminsRef.nonEmpty) adminsRef.get ! tQuestion else Logger.warn("TQuestion: No admin connected")
 
+  def sendTimer(timer: Timer): Unit =
+    if (adminsRef.nonEmpty) adminsRef.get ! timer else Logger.warn("Timer: No admin connected")
+
+  def sendAnswer(answer: Answer): Unit =
+    if (adminsRef.nonEmpty) adminsRef.get ! answer else Logger.warn("Answer: No admin connected")
+
 }

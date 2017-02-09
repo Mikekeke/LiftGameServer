@@ -27,7 +27,8 @@
                 <p><span id="v1">v1</span> || <span id="v2">v2</span></p>
                 <p><span id="v3">v3</span> || <span id="v4">v4</span></p>
                 <p>Проверка: <span id="result"></span></p>
-                <p><span id="timer_state"></span></p>
+                <p>Ответ: <span id="ans_state">Свёрнут</span></p>
+                <p>Таймер: <span id="timer_state"></span></p>
             </div>
         </div>
 
@@ -133,6 +134,8 @@
                         var4 = document.getElementById("v4"),
                         logo = document.getElementById("logo"),
                         layout = document.getElementById("layout"),
+                        timer = document.getElementById("timer_state"),
+                        answerState = document.getElementById("ans_state"),
                         result = document.getElementById("result");
 
                 var telSocket = new WebSocket("@url");
@@ -164,13 +167,13 @@
                         }
                     }
 
-                    if (data.variant != undefined) {
+                    else if (data.variant != undefined) {
                         var varN = data.variant;
                         resetVarFields();
                         document.getElementById("v" + varN).style.background = "yellow";
                     }
 
-                    if (data.check != undefined) {
+                    else if (data.check != undefined) {
                         var check = data.check;
                         if (check.includes("Правильно")) {
                             result.style.color = "forestgreen"
@@ -181,14 +184,23 @@
                         result.innerHTML = data.check;
                     }
 
-                    if (data.logo != undefined) {
+                    else if (data.logo != undefined) {
                         logo.style.display = "block";
                         layout.style.display = "none";
+                        logo.innerHTML = data.logo
                     }
 
-                    if (data.question != undefined) {
+                    else if (data.question != undefined) {
                         logo.style.display = "none";
                         layout.style.display = "block";
+                    }
+
+                    else if (data.timer != undefined) {
+                        timer.innerHTML = data.timer;
+                    }
+
+                    else if (data.answer != undefined) {
+                        answerState.innerHTML = data.answer;
                     }
 
                 };

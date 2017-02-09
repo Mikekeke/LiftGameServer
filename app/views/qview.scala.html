@@ -3,10 +3,14 @@
 <div id="question_view">
     <span style="font-size: medium"><b>№@q.number - </b></span>
     <span style="font-size: medium"><b>@q.name</b></span>
-    <p>@q.question</p>
+    <p>Текст: @q.question</p>
     <p>Ответ: @q.answer</p>
-    <p><span id="1">@q.variants("1")</span> || <span id="2">@q.variants("2")</span></p>
-    <p><span id="3">@q.variants("3")</span> || <span id="4">@q.variants("4")</span></p>
+    <div id="vars_in_preview">
+        <label id="1" class="var_in_preview">@q.variants("1")</label> <label class="var_in_preview" id="2">@q.variants("2")</label>
+        <br>
+        <label id="3" class="var_in_preview">@q.variants("3")</label> <label class="var_in_preview" id="4">@q.variants("4")</label>
+    </div>
+
 
     <script type="application/javascript">
         document.getElementById("@q.correctVar").style.background = "green"

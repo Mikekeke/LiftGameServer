@@ -36,9 +36,13 @@ class ClientSocketActor(out: ActorRef) extends Actor with akka.actor.ActorLoggin
         ActorHub sendTelemetry Telemetry(msg.substring("telemetry-".length, msg.length))
       } else if (msg.startsWith("check-")){
         ActorHub sendCheck Check(msg.substring("check-".length, msg.length))
-      } else if (msg.equals("logo")){
-        ActorHub sendLogo Logo("logo")
-      }else if (msg.equals("question")){
+      } else if (msg.startsWith("answer-")){
+        ActorHub sendAnswer Answer(msg.substring("answer-".length, msg.length))
+      } else if (msg.startsWith("timer-")){
+        ActorHub sendTimer Timer(msg.substring("timer-".length, msg.length))
+      } else if (msg.startsWith("logo-")){
+        ActorHub sendLogo Logo(msg.substring("logo-".length, msg.length))
+      } else if (msg.equals("question")){
         ActorHub sendTQuestion TQuestion("question")
       } else {
         out ! ("Server received your message: " + msg)
