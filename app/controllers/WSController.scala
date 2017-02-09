@@ -63,9 +63,11 @@ class WSController @Inject()
   }
 
   def makeQuestionAsked(qNum: Int) = {
+    ActorHub sendToClient ApiMessage(Api.Method.LOGO)
     Try(excelParser.makeAskedQuestionNumber(qNum)) match {
       case Success(any) =>
         Logger.info(s"Question -${QuestionCache.getCurrent.get.name}- with number = $qNum now ASKED")
+        QuestionCache.clear
       case Failure(e) =>
         Logger.error("Error on making question asked", e)
     }
