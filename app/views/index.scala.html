@@ -2,7 +2,7 @@
 @import model.api.AdminMessage
 @import model.api.Api
 @import model.api.ClientState
-@(questionString: String)(url: String)
+@(questionString: String)(url: String)(qForPreview: Seq[String])(currQ: Question)
 
 <!DOCTYPE html>
 
@@ -17,71 +17,87 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
     <body>
-        <span id="test_admin">Test Admin</span>
+        <div id="client_screen" class="framed">
 
-
-        @helper.form(action = routes.WSController.pickQuestion()) {
-            <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Выбрать вопрос
-            </button>
-        }
-        @if(!questionString.equals(Question.NOT_SET)) {
-            @helper.form(action = routes.WSController.send) {
-                <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Задать
-                    <i class="material-icons right">send</i>
-                </button>
-            }
-        }
-        <div id="question">
-            <u>Текущий вопрос:</u><br>
-            @questionString.split("&&").map { s =>
-                @s <br>
-            }
         </div>
-        <label id="picked_variant" style="font-size: medium"></label>
-        <label id="check" style="font-size: medium"></label>
-        <br>
-        @if(!questionString.equals(Question.NOT_SET)) {
 
-            <label for="variant_buttons" style="margin-left: 10px">Выбор варианта ведущим:</label>
-            <div id="variant_buttons" class="labeled_buttons" style="display: block;">
-                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
-                    Вариант 1
-                </a>
-                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
-                    Вариант 2
-                </a>
-                <br>
-                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">
-                    Вариант 3</a>
-                <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "4").toJson');">
-                    Вариант 4</a>
-            </div>
+        <div id="control_block" class="framed">
 
-
-
-            <div id="question-actions" style="display: block;">
-                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">
-                    Правильный вариант</button>
-                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.EXPAND_ANSWER, "").toJson');">
-                    Ответ развёрнутый</button>
-                @helper.form(action = routes.WSController.questionDone()) {
-                    <button class="btn waves-effect waves-light my_btn" type="submit" name="qaction" value="done">Вопрос сыграл</button>
+            <div id="buttons_and_info" class="framed">
+                @helper.form(action = routes.WSController.pickQuestion()) {
+                    <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Выбрать вопрос
+                    </button>
                 }
+                @if(!questionString.equals(Question.NOT_SET)) {
+                    @helper.form(action = routes.WSController.send) {
+                        <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Задать
+                            <i class="material-icons right">send</i>
+                        </button>
+                    }
+                }
+
+                <div id="question" class="framed">
+                    <u>Текущий вопрос:</u><br>
+                    @questionString.split("&&").map { s =>
+                        @s <br>
+                    }
+                </div>
+
+                <div id="variant_div">
+                    <label id="picked_variant" style="font-size: medium"></label>
+                    <label id="check" style="font-size: medium"></label>
+                    <br>
+                    @if(!questionString.equals(Question.NOT_SET)) {
+                        <p id="variant_buttons" class="framed" style="display: block;">
+                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
+                                @currQ.variants("1")
+                            </a>
+                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
+                            @currQ.variants("2")
+                            </a>
+                            <br>
+                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">
+                            @currQ.variants("3")</a>
+                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "4").toJson');">
+                            @currQ.variants("4")</a>
+                            }
+                </div>
             </div>
-            <label id = "timer_label" for="timer_buttons" style="margin-left: 10px">Таймер:</label>
-            <div id="timer_buttons" class="labeled_buttons" style="display: block;">
+
+            <div id="timer_buttons" class="framed">
                 <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_START, "").toJson');">
                     СТАРТ</button>
+                <br>
                 <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_STOP, "").toJson');">
                     СТОП</button>
+                <br>
                 <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_RESET, "").toJson');">
                     СБРОС</button>
             </div>
-        }
-        @*<img src="@routes.Assets.at("images/screenshot.png")" />*@
 
-        @*<script type='text/javascript' src='@routes.Assets.at("lib/jquery/jquery.js")'></script>*@
-        @*<script type='text/javascript' src='@routes.Assets.at("lib/flot/jquery.flot.js")'></script>*@
+            <div id="question_actions" class="framed">
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.CHECK, "").toJson');">
+                    Правильный вариант</button>
+                <br>
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.EXPAND_ANSWER, "").toJson');">
+                    Ответ развёрнутый</button>
+                @helper.form(action = routes.WSController.questionDone()) {
+                    <button class="btn waves-effect waves-light my_btn" type="submit" name="qaction" value="done">
+                        Вопрос сыграл</button>
+                }
+            </div>
+
+        </div>
+
+        <div id="preview">
+            <div id="preview_buttons">
+            @qForPreview.map { qName =>
+                <button id="@qName" name="prev_buttons" value="@qName" onclick="getPreview('@qName');">@qName</button>
+                <br>
+            }
+            </div>
+            <div id="question_preview" class="framed"></div>
+        </div>
         <br>
         <div id = "online" style="display: none">
             &nbsp&nbspКлиент Онлайн
@@ -90,6 +106,14 @@
             &nbspКлиент Оффлайн
         </div>
 
+        <script type="text/javascript" >
+                function getPreview(qName) {
+                    $.get("qscheme", {name: qName}, function (data) {
+                        $("#question_preview").html(data);
+                    });
+                }
+
+        </script>
         <script type="text/javascript" >
                 var telSocket = new WebSocket("@url");
                 telSocket.onopen = function () {
@@ -140,8 +164,6 @@
                 };
 
         </script>
-
         <script src="@routes.Assets.at("javascripts/materialize.min.js")" type="text/javascript"></script>
-
     </body>
 </html>

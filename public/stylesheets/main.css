@@ -26,7 +26,6 @@ label{
     font-size: medium;
     border: solid 2px cadetblue;
     background: #e2ffed;
-    width: 30%;
 }
 
 #online {
@@ -56,18 +55,72 @@ label{
  }
 .var_btn {
     color: #3f51b5;
+    width: 45%;
+    height: 45%;
 }
 
-.labeled_buttons {
+.framed {
     border: solid 2px cadetblue;
 }
+#variant_div {
 
+}
 #variant_buttons {
-    margin-left: 10px;
+    width: 100%;
+    float: right;
+}
+
+
+#timer_buttons {
+    display: table-column;
+    float: left;
+}
+
+#question_actions {
+    margin-top: 3ex;
+    float: left;
+}
+
+#preview {
+    float: left;
+    width: 70%;
+}
+#preview_buttons {
+    float: left;
     width: 50%;
 }
-#timer_buttons {
-    margin-left: 10px;
+#question_preview {
+    float: left;
     width: 50%;
+}.framed
+
+#question_view {
+    align-content: center;
+    align-items: center;
+}
+#control_block {
+    height: 55ex;
+    margin-top: 4ex;
+    width: 60%;
+    float: right;
+}
+
+#buttons_and_info {
+    float: right;
+    height: 54ex;
+}
+
+
+
+#client_screen {
+    margin-top: 4ex;
+    width: 40%;
+    height: 55ex;
+    float: left;
+}
+
+#buttons_and_info {
+    float: right;
+    width: 60%;
 }
 

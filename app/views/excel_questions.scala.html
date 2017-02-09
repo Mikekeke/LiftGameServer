@@ -27,7 +27,7 @@
         </div>
 
         <div class="collection">
-        @for(q <- questions.filterNot(_.status == Question.Status.ASKED)) {
+        @for(q <- questions) {
             @helper.form(action = routes.XLController.saveOrPick(questions.indexOf(q))) {
                 <a href="#!" class="collection-item">
                     <label>№<textarea class="q_text" id="number" rows="2" name="number" cols="1" contenteditable="true">@q.number</textarea></label>

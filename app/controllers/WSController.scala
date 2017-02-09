@@ -11,7 +11,7 @@ import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.streams._
 import play.api.mvc._
-import utils.{ActorHub, CachedQuestion, ExcelParser}
+import utils.{ActorHub, QuestionCache, ExcelParser}
 
 import scala.util.{Failure, Success, Try}
 
@@ -25,11 +25,12 @@ class WSController @Inject()
 
   def index = Action { implicit request =>
     val url = routes.WSController.adminSocket().webSocketURL()
-    CachedQuestion.get match {
+    val qForPreview: Seq[String] = QuestionCache.getAll.getOrElse(Seq.empty).map(_.name)
+    QuestionCache.getCurrent match {
       case Some(q) =>
-        Ok(views.html.index(q.toDescription)(url))
+        Ok(views.html.index(q.toDescription)(url)(qForPreview)(q))
       case _ =>
-        Ok(views.html.index(Question.NOT_SET)(url))
+        Ok(views.html.index(Question.NOT_SET)(url)(Seq.empty)(null))
     }
   }
 
@@ -42,8 +43,8 @@ class WSController @Inject()
   }
 
   def send = Action { implicit request =>
-    if (CachedQuestion.get.nonEmpty) {
-      ActorHub sendToClient ApiMessage(Api.Method.QUESTION, Json.toJson(CachedQuestion.get.get).toString())
+    if (QuestionCache.getCurrent.nonEmpty) {
+      ActorHub sendToClient ApiMessage(Api.Method.QUESTION, Json.toJson(QuestionCache.getCurrent.get).toString())
     }
     Redirect(routes.WSController.index())
   }
@@ -56,28 +57,27 @@ class WSController @Inject()
 
   }
 
-  //  def pickVariant() = Action { implicit request =>
-  //    request.body.asFormUrlEncoded.get("send_variant").headOption match {
-  //      case Some("var_1") => ActorHub send ApiMessage(Api.Method.PICK_VARIANT, "1")
-  //      case Some("var_2") => ActorHub send ApiMessage(Api.Method.PICK_VARIANT, "2")
-  //      case Some("var_3") => ActorHub send ApiMessage(Api.Method.PICK_VARIANT, "3")
-  //      case Some("var_4") => ActorHub send ApiMessage(Api.Method.PICK_VARIANT, "4")
-  //    }
-  //    Redirect(routes.WSController.index())
-  //  }
-
   def questionDone = Action { implicit request =>
-    makeQuestionAsked(CachedQuestion.getNum)
+    makeQuestionAsked(QuestionCache.getNum)
     Redirect(routes.WSController.index())
   }
 
   def makeQuestionAsked(qNum: Int) = {
     Try(excelParser.makeAskedQuestionNumber(qNum)) match {
       case Success(any) =>
-        Logger.info(s"Question -${CachedQuestion.get.get.name}- with number = $qNum now ASKED")
+        Logger.info(s"Question -${QuestionCache.getCurrent.get.name}- with number = $qNum now ASKED")
       case Failure(e) =>
         Logger.error("Error on making question asked", e)
     }
+  }
+
+  def questionScheme(qName: String) = Action { implicit request =>
+    if (QuestionCache.getAll.nonEmpty) {
+      val question: Option[Question] = QuestionCache.getAll.get.find(_.name == qName)
+      if (question.nonEmpty) Ok(views.html.qview(question.get))
+      else BadRequest
+    }
+    else BadRequest
   }
 
   def testScheduler = Action { implicit request =>
@@ -85,7 +85,7 @@ class WSController @Inject()
     //    system.scheduler.schedule(Duration(0, TimeUnit.SECONDS), Duration(2, TimeUnit.SECONDS)) {
     //      sender ! "give image"
     //    }
-//    ActorHub sendToAdmin "give image"
+    //    ActorHub sendToAdmin "give image"
     Redirect(routes.WSController.index())
   }
 

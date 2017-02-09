@@ -13,7 +13,7 @@ import play.api.{Configuration, Play}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
-import utils.{CachedQuestion, ExcelParser, FileUtils}
+import utils.{QuestionCache, ExcelParser, FileUtils}
 
 import scala.util.{Failure, Success, Try}
 
@@ -33,9 +33,10 @@ class XLController @Inject()
 
   def indexQuestions = Action { implicit request =>
     Try(excelParser.getQuestions) match {
-      case Success(questions) => {
-        Ok(views.html.excel_questions(excelParser.path, questions, questionForm))
-      }
+      case Success(questions) =>
+        val filteredQuestions = questions.filterNot(_.status == Question.Status.ASKED)
+        QuestionCache.cacheAll(filteredQuestions)
+        Ok(views.html.excel_questions(excelParser.path, filteredQuestions, questionForm))
       case Failure(e) =>
         Ok(views.html.excel_questions(e.getMessage, Seq.empty, questionForm))
     }
@@ -101,7 +102,7 @@ class XLController @Inject()
           }
         }
         case Some("pick") => {
-          CachedQuestion.cache(questionNum, Question fromData form.data)
+          QuestionCache.cacheCurrent(questionNum, Question fromData form.data)
           Redirect(routes.WSController.index())
         }
       }
