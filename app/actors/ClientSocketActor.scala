@@ -33,6 +33,7 @@ class ClientSocketActor(out: ActorRef) extends Actor with akka.actor.ActorLoggin
   def receive: PartialFunction[Any, Unit] = {
     case msg: String =>{
       if (msg.startsWith("telemetry-")) {
+        // TODO: move all this shit to one Feedback class
         ActorHub sendTelemetry Telemetry(msg.substring("telemetry-".length, msg.length))
       } else if (msg.startsWith("check-")){
         ActorHub sendCheck Check(msg.substring("check-".length, msg.length))
@@ -46,8 +47,8 @@ class ClientSocketActor(out: ActorRef) extends Actor with akka.actor.ActorLoggin
         ActorHub sendTQuestion TQuestion("question")
       } else {
         out ! ("Server received your message: " + msg)
+        Logger.warn(s"${this.getClass.getSimpleName} got string: $msg")
       }
-      Logger.warn(s"${this.getClass.getSimpleName} got string: $msg")
 //      Sender sendTelemetry msg
     }
     case mes: ApiMessage => {
