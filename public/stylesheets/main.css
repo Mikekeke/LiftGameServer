@@ -134,6 +134,8 @@ label {
 }
 
 #client_screen {
+    padding-left: 10px;
+    padding-right: 10px;
     margin-top: 4ex;
     width: 40%;
     height: 55ex;
@@ -143,5 +145,11 @@ label {
 #buttons_and_info {
     float: right;
     width: 60%;
+}
+
+#q_answer {
+    color: black;
+    font-size: medium;
+    border: solid 2px brown;
 }
 

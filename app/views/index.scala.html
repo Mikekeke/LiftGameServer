@@ -18,17 +18,25 @@
     </head>
     <body>
         <div id="client_screen" class="framed">
-            <span id="logo" style="font-size: large">ЛОГОТИП</span>
-            <div id="layout" style="display: none">
-                <p><span id="q_num"></span></p>
-                <p><span id="q_name"></span></p>
-                <p><span id="q_text"></span></p>
-                <p><span id="q_answer"></span></p>
-                <p><span id="v1">v1</span> || <span id="v2">v2</span></p>
-                <p><span id="v3">v3</span> || <span id="v4">v4</span></p>
-                <p>Проверка: <span id="result"></span></p>
-                <p>Ответ: <span id="ans_state">Свёрнут</span></p>
-                <p>Таймер: <span id="timer_state"></span></p>
+            <div id = "client_scr_wrapper">
+                <br>
+                <span id="logo" style="font-size: large">ЛОГОТИП</span>
+                <div id="layout" style="display: none">
+                @if(currQ != null) {
+                    <br>
+                    <p><span id="q_text" style="font-size: x-large" >Вопрос: @currQ.question</span></p>
+                    <p><label id="q_answer" style="display: none">@currQ.answer</label></p>
+                    <div>
+                        <label id="v1" class="var_in_preview">@currQ.variants("1")</label>
+                        <label id="v2" class="var_in_preview">@currQ.variants("2")</label>
+                        <br>
+                        <label id="v3" class="var_in_preview">@currQ.variants("3")</label>
+                        <label id="v4" class="var_in_preview">@currQ.variants("4")</label>
+                    </div>
+                    <p>Проверка: <span id="result"></span></p>
+                    <p>Таймер: <span id="timer_state"></span></p>
+                }
+                </div>
             </div>
         </div>
 
@@ -83,6 +91,10 @@
                 <br>
                 <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_RESET, "").toJson');">
                     СБРОС</button>
+                <br>
+                <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.LOGO, "").toJson');">
+                    ЛОГО</button>
+
             </div>
 
             <div id="question_actions" class="framed">
@@ -135,7 +147,8 @@
                         logo = document.getElementById("logo"),
                         layout = document.getElementById("layout"),
                         timer = document.getElementById("timer_state"),
-                        answerState = document.getElementById("ans_state"),
+                        answer = document.getElementById("q_answer"),
+                        clientScreen = document.getElementById("client_scr_wrapper"),
                         result = document.getElementById("result");
 
                 var telSocket = new WebSocket("@url");
@@ -158,10 +171,12 @@
                     if (data.state != undefined) {
                         var state = data.state;
                         if (state == "@ClientState.UP") {
+                            clientScreen.style.display = "block";
                             document.getElementById("online").style.display = "block";
                             document.getElementById("offline").style.display = "none";
                         }
                         if (state == "@ClientState.DOWN") {
+                            clientScreen.style.display = "none";
                             document.getElementById("online").style.display = "none";
                             document.getElementById("offline").style.display = "block";
                         }
@@ -200,7 +215,12 @@
                     }
 
                     else if (data.answer != undefined) {
-                        answerState.innerHTML = data.answer;
+                        var ans = data.answer;
+                        if (ans == "open") {
+                            answer.style.display = "block";
+                        } else if (ans == "closed") {
+                            answer.style.display = "none";
+                        }
                     }
 
                 };
