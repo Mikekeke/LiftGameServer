@@ -18,7 +18,17 @@
     </head>
     <body>
         <div id="client_screen" class="framed">
-
+            <span id="logo" style="font-size: large">ЛОГОТИП</span>
+            <div id="layout" style="display: none">
+                <p><span id="q_num"></span></p>
+                <p><span id="q_name"></span></p>
+                <p><span id="q_text"></span></p>
+                <p><span id="q_answer"></span></p>
+                <p><span id="v1">v1</span> || <span id="v2">v2</span></p>
+                <p><span id="v3">v3</span> || <span id="v4">v4</span></p>
+                <p>Проверка: <span id="result"></span></p>
+                <p><span id="timer_state"></span></p>
+            </div>
         </div>
 
         <div id="control_block" class="framed">
@@ -29,11 +39,10 @@
                     </button>
                 }
                 @if(!questionString.equals(Question.NOT_SET)) {
-                    @helper.form(action = routes.WSController.send) {
-                        <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Задать
-                            <i class="material-icons right">send</i>
-                        </button>
-                    }
+                    <button class="btn waves-effect waves-light my_btn" type="submit" name="action"
+                    onclick="sendQuestion();">Задать
+                        <i class="material-icons right">send</i>
+                    </button>
                 }
 
                 <div id="question" class="framed">
@@ -50,7 +59,7 @@
                     @if(!questionString.equals(Question.NOT_SET)) {
                         <p id="variant_buttons" class="framed" style="display: block;">
                             <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
-                                @currQ.variants("1")
+                            @currQ.variants("1")
                             </a>
                             <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
                             @currQ.variants("2")
@@ -92,7 +101,7 @@
         <div id="preview">
             <div id="preview_buttons">
             @qForPreview.map { qName =>
-                <button id="@qName" name="prev_buttons" value="@qName" onclick="getPreview('@qName');">@qName</button>
+                <button id="@qName" name="prev_buttons" class="prev_button" value="@qName" onclick="getPreview('@qName');">@qName</button>
                 <br>
             }
             </div>
@@ -107,14 +116,25 @@
         </div>
 
         <script type="text/javascript" >
+                function sendQuestion() {
+                    $.post("send");
+                }
                 function getPreview(qName) {
                     $.get("qscheme", {name: qName}, function (data) {
                         $("#question_preview").html(data);
                     });
                 }
-
         </script>
+
         <script type="text/javascript" >
+                var var1 = document.getElementById("v1"),
+                        var2 = document.getElementById("v2"),
+                        var3 = document.getElementById("v3"),
+                        var4 = document.getElementById("v4"),
+                        logo = document.getElementById("logo"),
+                        layout = document.getElementById("layout"),
+                        result = document.getElementById("result");
+
                 var telSocket = new WebSocket("@url");
                 telSocket.onopen = function () {
                 };
@@ -143,27 +163,48 @@
                             document.getElementById("offline").style.display = "block";
                         }
                     }
+
                     if (data.variant != undefined) {
-                        document.getElementById("picked_variant").innerHTML = "Выбран вариант " + data.variant;
+                        var varN = data.variant;
+                        resetVarFields();
+                        document.getElementById("v" + varN).style.background = "yellow";
                     }
 
                     if (data.check != undefined) {
                         var check = data.check;
                         if (check.includes("Правильно")) {
-                            document.getElementById("check").style.color = "forestgreen"
+                            result.style.color = "forestgreen"
                         }
                         if (check.includes("Ошибка")) {
-                            document.getElementById("check").style.color = "red"
+                            result.style.color = "red"
                         }
-                        document.getElementById("check").innerHTML = " >>> " + data.check;
+                        result.innerHTML = data.check;
                     }
+
+                    if (data.logo != undefined) {
+                        logo.style.display = "block";
+                        layout.style.display = "none";
+                    }
+
+                    if (data.question != undefined) {
+                        logo.style.display = "none";
+                        layout.style.display = "block";
+                    }
+
                 };
 
                 telSocket.onerror = function (error) {
                     alert("Ошибка " + error.message);
                 };
 
+                function resetVarFields() {
+                    var1.style.background = "white";
+                    var2.style.background = "white";
+                    var3.style.background = "white";
+                    var4.style.background = "white";
+                }
         </script>
+
         <script src="@routes.Assets.at("javascripts/materialize.min.js")" type="text/javascript"></script>
     </body>
 </html>

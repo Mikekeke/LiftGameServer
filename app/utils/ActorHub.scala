@@ -1,7 +1,7 @@
 package utils
 
 import akka.actor.ActorRef
-import model.api.{ApiMessage, Check, ClientState, Telemetry}
+import model.api._
 import play.api.Logger
 
 /**
@@ -36,4 +36,11 @@ object ActorHub {
 
   def sendCheck(check: Check): Unit =
     if (adminsRef.nonEmpty) adminsRef.get ! check else Logger.warn("Check: No admin connected")
+
+  def sendLogo(logo: Logo): Unit =
+    if (adminsRef.nonEmpty) adminsRef.get ! logo else Logger.warn("Logo: No admin connected")
+
+  def sendTQuestion(tQuestion: TQuestion): Unit =
+    if (adminsRef.nonEmpty) adminsRef.get ! tQuestion else Logger.warn("TQuestion: No admin connected")
+
 }

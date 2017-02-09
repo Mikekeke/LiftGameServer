@@ -44,7 +44,7 @@ class WSController @Inject()
 
   def send = Action { implicit request =>
     if (QuestionCache.getCurrent.nonEmpty) {
-      ActorHub sendToClient ApiMessage(Api.Method.QUESTION, Json.toJson(QuestionCache.getCurrent.get).toString())
+      ActorHub sendToClient ApiMessage(Api.Method.QUESTION, QuestionCache.getCurrent.get.toJson.toString())
     }
     Redirect(routes.WSController.index())
   }

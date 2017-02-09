@@ -29,6 +29,8 @@ class AdminSocketActor(out: ActorRef) extends Actor {
   }
 
   override def receive: Receive = {
+    case tQuestion: TQuestion => out ! tQuestion.toJson
+    case logo: Logo => out ! logo.toJson
     case check: Check => out ! check.toJson
     case state: ClientState => out ! state.toJson
     case tel: Telemetry => out ! tel.toJson

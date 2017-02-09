@@ -18,6 +18,8 @@ case class Question(number: Int, name:String, question: String, correctVar: Int,
 //    s"|${variants("1")}|${variants("2")}|${variants("3")}|${variants("4")}" +
 //    s"|$answer|${status.value}|$img1|$img2"
 
+  def toJson = Json.toJson(this)
+  def toJSString = toJson.toString()
   def toDescription = s"№ $number - $name: $question &&" +
     s"Ответ: $answer&&" +
     s"Правильный вариант: №$correctVar - ${variants(correctVar.toString)}"

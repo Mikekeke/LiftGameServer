@@ -58,6 +58,9 @@ label{
     width: 45%;
     height: 45%;
 }
+.prev_button {
+    width: 40ex;
+}
 
 .framed {
     border: solid 2px cadetblue;
