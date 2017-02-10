@@ -12,8 +12,8 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/materialize.min.css")">
     </head>
     <body>
-        <a href="@routes.WSController.index()">назад</a>
-        <p>Путь к файлу с вопросами: @filePath</p>
+        <p><a href="@routes.WSController.index()">назад</a></p>
+        <p><a href="@routes.WSController.downloadExcel()">Скачать файл с вопросами</a></p>
 
         @helper.form(action = routes.XLController.uploadFile(), 'enctype -> "multipart/form-data") {
             <input type="file" name="excel">

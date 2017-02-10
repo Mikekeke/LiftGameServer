@@ -8,6 +8,7 @@ GET         /clientSocket         controllers.WSController.clientSocket
 GET         /adminSocket          controllers.WSController.adminSocket
 GET         /imgsocket            controllers.WSController.imgsocket
 GET         /qscheme              controllers.WSController.questionScheme(name: String)
+GET         /download_excel              controllers.WSController.downloadExcel
 POST        /send                 controllers.WSController.send
 POST        /question_done        controllers.WSController.questionDone
 POST        /pick_question        controllers.WSController.pickQuestion

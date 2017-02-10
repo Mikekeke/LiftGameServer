@@ -1,5 +1,6 @@
 package controllers
 
+import java.io.File
 import javax.inject._
 
 import actors.{AdminSocketActor, ClientSocketActor, ImageActor}
@@ -11,7 +12,7 @@ import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.streams._
 import play.api.mvc._
-import utils.{ActorHub, QuestionCache, ExcelParser}
+import utils.{ActorHub, ExcelParser, FileUtils, QuestionCache}
 
 import scala.util.{Failure, Success, Try}
 
@@ -20,7 +21,7 @@ import scala.util.{Failure, Success, Try}
   */
 @Singleton
 class WSController @Inject()
-(implicit system: ActorSystem, materializer: Materializer, excelParser: ExcelParser)
+(implicit system: ActorSystem, materializer: Materializer, excelParser: ExcelParser, fileUtils: FileUtils)
   extends Controller {
 
   def index = Action { implicit request =>
@@ -89,6 +90,17 @@ class WSController @Inject()
     //    }
     //    ActorHub sendToAdmin "give image"
     Redirect(routes.WSController.index())
+  }
+
+  def downloadExcel = Action {
+    fileUtils.getExcelFilePath match {
+      case Success(path) =>
+        val file = new File(path)
+        Try(Ok.sendFile(file)).getOrElse(BadRequest("Файл не найден"))
+      case Failure(e) =>
+        Logger.error("Error downloading file", e)
+        BadRequest("Ошибка при скачивании файла")
+    }
   }
 
   def imgsocket: WebSocket = WebSocket.accept[Array[Byte], Array[Byte]] { request =>
