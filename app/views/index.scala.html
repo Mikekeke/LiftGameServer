@@ -21,11 +21,13 @@
             <div id = "client_scr_wrapper">
                 <br>
                 <span id="logo" style="font-size: large">ЛОГОТИП</span>
-                <div id="layout" style="display: none">
+
                 @if(currQ != null) {
+                    <p><label id="q_answer" style="display: none">@currQ.answer</label></p>
+                    <div id="layout" style="display: none">
                     <br>
                     <p><span id="q_text" style="font-size: x-large" >Вопрос: @currQ.question</span></p>
-                    <p><label id="q_answer" style="display: none">@currQ.answer</label></p>
+
                     <div>
                         <label id="v1" class="var_in_preview">@currQ.variants("1")</label>
                         <label id="v2" class="var_in_preview">@currQ.variants("2")</label>
@@ -35,52 +37,57 @@
                     </div>
                     <p>Проверка: <span id="result"></span></p>
                     <p>Таймер: <span id="timer_state"></span></p>
-                }
                 </div>
+
+                    <script type="application/javascript">
+                            document.getElementById("v" + @currQ.correctVar).style.border = "solid 7px lightgreen"
+                    </script>
+                }
             </div>
         </div>
 
         <div id="control_block" class="framed">
 
-            <div id="buttons_and_info" class="framed">
-                @helper.form(action = routes.WSController.pickQuestion()) {
-                    <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Выбрать вопрос
-                    </button>
-                }
-                @if(!questionString.equals(Question.NOT_SET)) {
-                    <button class="btn waves-effect waves-light my_btn" type="submit" name="action"
-                    onclick="sendQuestion();">Задать
-                        <i class="material-icons right">send</i>
-                    </button>
-                }
-
-                <div id="question" class="framed">
-                    <u>Текущий вопрос:</u><br>
-                    @questionString.split("&&").map { s =>
-                        @s <br>
+            <div id="control_right_side" class="framed">
+                <div id="buttons_and_info" class="framed">
+                    @helper.form(action = routes.WSController.pickQuestion()) {
+                        <button class="btn waves-effect waves-light my_btn" type="submit" name="action">Выбрать вопрос
+                        </button>
                     }
-                </div>
+                    @if(!questionString.equals(Question.NOT_SET)) {
+                        <button class="btn waves-effect waves-light my_btn" type="submit" name="action"
+                        onclick="sendQuestion();">Задать
+                            <i class="material-icons right">send</i>
+                        </button>
+                    }
 
-                <div id="variant_div">
+                    <div id="question" class="framed">
+                        <u>Текущий вопрос:</u><br>
+                        @questionString.split("&&").map { s =>
+                            @s <br>
+                        }
+                    </div>
+                </div>
+                <div id="variant_div" class="framed">
                     <label id="picked_variant" style="font-size: medium"></label>
                     <label id="check" style="font-size: medium"></label>
                     <br>
                     @if(!questionString.equals(Question.NOT_SET)) {
-                        <p id="variant_buttons" class="framed" style="display: block;">
-                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
+                            <button class="var_btn waves-effect" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "1").toJson');">
                             @currQ.variants("1")
-                            </a>
-                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
+                            </button>
+                            <button class="waves-effect waves-light var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "2").toJson');">
                             @currQ.variants("2")
-                            </a>
+                            </button>
                             <br>
-                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">
-                            @currQ.variants("3")</a>
-                            <a class="waves-effect waves-light btn my_btn var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "4").toJson');">
-                            @currQ.variants("4")</a>
+                            <button class="waves-effect waves-light var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "3").toJson');">
+                            @currQ.variants("3")</button>
+                            <button class="waves-effect waves-light var_btn" onclick="telSocket.send('@AdminMessage(Api.Method.PICK_VARIANT, "4").toJson');">
+                            @currQ.variants("4")</button>
                             }
                 </div>
             </div>
+
 
             <div id="timer_buttons" class="framed">
                 <button class="btn waves-effect waves-light my_btn" onclick="telSocket.send('@AdminMessage(Api.Method.TIMER_START, "").toJson');">
@@ -202,6 +209,7 @@
                     else if (data.logo != undefined) {
                         logo.style.display = "block";
                         layout.style.display = "none";
+                        answer.style.display = "none";
                         logo.innerHTML = data.logo
                     }
 
@@ -215,12 +223,8 @@
                     }
 
                     else if (data.answer != undefined) {
-                        var ans = data.answer;
-                        if (ans == "open") {
-                            answer.style.display = "block";
-                        } else if (ans == "closed") {
-                            answer.style.display = "none";
-                        }
+                        answer.style.display = "block";
+                        layout.style.display = "none";
                     }
 
                 };

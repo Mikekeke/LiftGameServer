@@ -25,6 +25,7 @@ label {
 
 #question {
     margin-left: 10px;
+    margin-right: 10px;
     padding: 7px;
     font-size: medium;
     border: solid 2px cadetblue;
@@ -59,9 +60,11 @@ label {
 }
 
 .var_btn {
-    color: #3f51b5;
+    margin: 5px;
+    color: #000000;
     width: 45%;
-    height: 45%;
+    height: 60px;
+    font-size: medium;
 }
 
 .prev_button {
@@ -72,22 +75,14 @@ label {
     color: black;
     margin: 2px;
     width: 20ex;
-    height: 5ex;
+    height: 10ex;
+    max-lines: 3;
     border: solid 2px #909090;
     font-size: medium;
 }
 
 .framed {
     border: solid 2px cadetblue;
-}
-
-#variant_div {
-
-}
-
-#variant_buttons {
-    width: 100%;
-    float: right;
 }
 
 #timer_buttons {
@@ -115,22 +110,16 @@ label {
     width: 50%;
 }
 
-.framed
 #question_view {
     align-content: center;
     align-items: center;
 }
 
 #control_block {
-    height: 55ex;
+    height: 70ex;
     margin-top: 4ex;
     width: 60%;
     float: right;
-}
-
-#buttons_and_info {
-    float: right;
-    height: 54ex;
 }
 
 #client_screen {
@@ -138,13 +127,25 @@ label {
     padding-right: 10px;
     margin-top: 4ex;
     width: 40%;
-    height: 55ex;
+    height: 70ex;
     float: left;
 }
 
-#buttons_and_info {
+#control_right_side {
     float: right;
     width: 60%;
+    height: 70ex;
+}
+#buttons_and_info {
+     float: right;
+     height: 65%;
+    width: 100%;
+}
+
+#variant_div {
+    float: right;
+    height: 35%;
+    width: 100%;
 }
 
 #q_answer {
