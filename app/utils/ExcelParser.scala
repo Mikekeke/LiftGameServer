@@ -4,7 +4,8 @@ import java.io.{File, FileInputStream, FileOutputStream}
 import javax.inject._
 
 import model.Question
-import org.apache.poi.ss.usermodel.{Row, Sheet, Workbook, WorkbookFactory}
+import org.apache.poi.ss.usermodel._
+import play.api.Logger
 
 import scala.collection.immutable.Seq
 import scala.util.{Failure, Success}
@@ -33,7 +34,7 @@ class ExcelParser @Inject()(fileUtils: FileUtils){
         wb = WorkbookFactory.create(in)
         sheet = wb.getSheetAt(0)
         rowsNum = sheet.getLastRowNum
-        rows = for (i <- 0 to rowsNum) yield sheet.getRow(i)
+        rows = (for (i <- 0 to rowsNum) yield sheet.getRow(i)).filterNot(_.getCell(1).toString.isEmpty)
       case Failure(e) => throw new IllegalStateException("Файл не найден")
     }
   }
@@ -96,6 +97,8 @@ class ExcelParser @Inject()(fileUtils: FileUtils){
     val status = row.getCell(9).getStringCellValue
     val img1 = ""
     val img2 = ""
-    Question(num, name, question, correctVar, answer, status, img1, img2, variants)
+    val q = Question(num, name, question, correctVar, answer, status, img1, img2, variants)
+    Logger.info("Assembled question: " + q.toString)
+    q
   }
 }
