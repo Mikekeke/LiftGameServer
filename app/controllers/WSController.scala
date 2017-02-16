@@ -92,14 +92,17 @@ class WSController @Inject()
     Redirect(routes.WSController.index())
   }
 
-  def downloadExcel = Action {
-    fileUtils.getExcelFilePath match {
-      case Success(path) =>
-        val file = new File(path)
-        Try(Ok.sendFile(file)).getOrElse(BadRequest("Файл не найден"))
-      case Failure(e) =>
-        Logger.error("Error downloading file", e)
-        BadRequest("Ошибка при скачивании файла")
+  def getImageByName(imgName: String) = Action { implicit request =>
+    try {
+      val dir = new File(fileUtils.getImagesDir.get)
+      val files = dir.list()
+      if (files.nonEmpty && files.contains(imgName)) Ok.sendFile(new File(dir, imgName))
+      else BadRequest(s"Can't get file: $imgName")
+
+    } catch {
+      case e: Exception =>
+        Logger.error("Error getting image: ", e)
+        BadRequest(s"Can't get file: $imgName: ${e.getMessage}")
     }
   }
 

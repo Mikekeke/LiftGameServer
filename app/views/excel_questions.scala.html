@@ -13,12 +13,19 @@
     </head>
     <body>
         <p><a href="@routes.WSController.index()">назад</a></p>
-        <p><a href="@routes.WSController.downloadExcel()">Скачать файл с вопросами</a></p>
+        <div id="download_block" class="framed">
+            <p><a href="@routes.XLController.downloadExcel()">Скачать файл с вопросами</a></p>
 
-        @helper.form(action = routes.XLController.uploadFile(), 'enctype -> "multipart/form-data") {
-            <input type="file" name="excel">
-            <input type="submit" value="Загрузить выбранный файл">
-        }
+            @helper.form(action = routes.XLController.uploadExcelFile(), 'enctype -> "multipart/form-data") {
+                <input type="file" name="excel">
+                <input type="submit" value="Загрузить выбранный файл">
+                }
+
+            @helper.form(action = routes.XLController.uploadImages(), 'enctype -> "multipart/form-data") {
+                <input type="file" name="images" id ="images" multiple>
+                <input type="submit" value="Загрузить изображения">
+                }
+        </div>
 
         <div >
 

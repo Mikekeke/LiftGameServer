@@ -98,7 +98,7 @@ class ExcelParser @Inject()(fileUtils: FileUtils){
     val img1 = ""
     val img2 = ""
     val q = Question(num, name, question, correctVar, answer, status, img1, img2, variants)
-    Logger.info("Assembled question: " + q.toString)
+//    Logger.info("Assembled question: " + q.toString)
     q
   }
 }

@@ -1,6 +1,6 @@
 package controllers
 
-import java.io.File
+import java.io.{File, FileNotFoundException}
 import javax.inject._
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -9,11 +9,11 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import froms.QForm
 import model.Question
-import play.api.{Configuration, Play}
+import play.api.{Configuration, Logger, Play}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
-import utils.{QuestionCache, ExcelParser, FileUtils}
+import utils.{ExcelParser, FileUtils, QuestionCache}
 
 import scala.util.{Failure, Success, Try}
 
@@ -23,7 +23,7 @@ import scala.util.{Failure, Success, Try}
 @Singleton
 class XLController @Inject()
 (implicit system: ActorSystem, materializer: Materializer,  configuration: Configuration,
- fileUtil: FileUtils, excelParser: ExcelParser)
+ fileUtils: FileUtils, excelParser: ExcelParser)
   extends Controller {
 
   //  var file: Option[File] = None
@@ -42,7 +42,18 @@ class XLController @Inject()
     }
   }
 
-  def uploadFile = Action(parse.multipartFormData) { request =>
+  def downloadExcel = Action {
+    fileUtils.getExcelFilePath match {
+      case Success(path) =>
+        val file = new File(path)
+        Try(Ok.sendFile(file)).getOrElse(BadRequest("Файл не найден"))
+      case Failure(e) =>
+        Logger.error("Error downloading file", e)
+        BadRequest("Ошибка при скачивании файла")
+    }
+  }
+
+  def uploadExcelFile = Action(parse.multipartFormData) { request =>
     request.body.file("excel").map { excel =>
       import java.io.File
       val filename = excel.filename
@@ -53,13 +64,29 @@ class XLController @Inject()
             val file = new File(path, filename)
             if (file.exists()) file.delete()
             val result = excel.ref.moveTo(file)
-            fileUtil.persistExcelFilePath(result.getAbsolutePath)
+            fileUtils.persistExcelFilePath(result.getAbsolutePath)
         }
       }
       Redirect(routes.XLController.indexQuestions())
     }.getOrElse {
       Redirect(routes.XLController.indexQuestions()).flashing(
         "error" -> "Missing file")
+    }
+  }
+
+  def uploadImages = Action(parse.multipartFormData) { request =>
+    try {
+      val files = request.body.files
+      val imgDir = new File(fileUtils.getImagesDir.get)
+      if (!imgDir.exists()) imgDir.mkdir()
+      files.foreach(file => {
+        val toSave = new File(imgDir, file.filename)
+        if (toSave.exists()) toSave.delete()
+        file.ref.moveTo(toSave)
+      })
+      Redirect(routes.XLController.indexQuestions())
+    } catch {
+      case e: Exception => BadRequest("Ошбка при сохранении изображений: " + e.getMessage)
     }
   }
 
