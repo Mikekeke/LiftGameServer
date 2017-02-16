@@ -54,8 +54,8 @@ object Question {
     data("v_corr").toInt,
     data("answer"),
     data("status"),
-    "",
-    "",
+    data("img1"),
+    data("img2"),
     Map(
       "1" -> data("v1"),
       "2" -> data("v2"),

@@ -95,8 +95,8 @@ class ExcelParser @Inject()(fileUtils: FileUtils){
     val correctVar = row.getCell(7).getNumericCellValue.toShort
     val answer = row.getCell(8).getStringCellValue
     val status = row.getCell(9).getStringCellValue
-    val img1 = ""
-    val img2 = ""
+    val img1 = row.getCell(10).getStringCellValue
+    val img2 = row.getCell(11).getStringCellValue
     val q = Question(num, name, question, correctVar, answer, status, img1, img2, variants)
 //    Logger.info("Assembled question: " + q.toString)
     q

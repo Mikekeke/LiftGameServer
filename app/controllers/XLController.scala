@@ -104,7 +104,9 @@ class XLController @Inject()
       "v4" -> text,
       "v_corr" -> number,
       "answer" -> text,
-      "status" -> text
+      "status" -> text,
+      "img1" -> text,
+      "img2" -> text
     )
   )
 
