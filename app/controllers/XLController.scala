@@ -46,10 +46,14 @@ class XLController @Inject()
     fileUtils.getExcelFilePath match {
       case Success(path) =>
         val file = new File(path)
-        Try(Ok.sendFile(file)).getOrElse(BadRequest("Файл не найден"))
+        if (file.exists()) Try(Ok.sendFile(file)).getOrElse(NotFound("Файл не найден"))
+        else NotFound("Файл не найден")
       case Failure(e) =>
         Logger.error("Error downloading file", e)
-        BadRequest("Ошибка при скачивании файла")
+        e match {
+          case e1: FileNotFoundException => NotFound("Файл не найден")
+          case _ => BadRequest("Ошибка при скачивании файла: " + e.getMessage)
+        }
     }
   }
 

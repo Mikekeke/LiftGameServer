@@ -16,7 +16,7 @@ class FileUtils @Inject()(configuration: Configuration) {
 
   private val PATH = {configuration.getString("uploadDir")
     .getOrElse(throw new NoSuchElementException("Cant find path in config"))}
-  private  val EXCEL_PATH: String = s"$PATH/excel.path"
+  private val EXCEL_PATH: String = s"$PATH/excel.path"
 
   def persistExcelFilePath(path: String): Unit = {
     val pw = new PrintWriter(new File(EXCEL_PATH))
