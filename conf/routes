@@ -3,24 +3,27 @@
 # ~~~~
 
 # Home page
-GET         /                      controllers.WSController.index
-GET         /clientSocket          controllers.WSController.clientSocket
-GET         /adminSocket           controllers.WSController.adminSocket
-GET         /imgsocket             controllers.WSController.imgsocket
-GET         /qscheme               controllers.WSController.questionScheme(name: String)
-GET         /download_excel        controllers.XLController.downloadExcel
-GET         /images                controllers.WSController.getImageByName(name: String)
-POST        /send                  controllers.WSController.send
-POST        /question_done         controllers.WSController.questionDone
-POST        /pick_question         controllers.WSController.pickQuestion
+GET         /                        controllers.WSController.index
+GET         /clientSocket            controllers.WSController.clientSocket
+GET         /adminSocket             controllers.WSController.adminSocket
+GET         /imgsocket               controllers.WSController.imgsocket
+GET         /qscheme                 controllers.WSController.questionScheme(name: String)
+GET         /download_excel          controllers.XLController.downloadExcel
+GET         /images                  controllers.WSController.getImageByName(name: String)
+GET         /list_images             controllers.XLController.listImages
+POST        /delete_images           controllers.XLController.deleteImages
+POST        /delete_questions        controllers.XLController.deleteQuestions
+POST        /send                    controllers.WSController.send
+POST        /question_done           controllers.WSController.questionDone
+POST        /pick_question           controllers.WSController.pickQuestion
 #POST        /pick_variant           controllers.WSController.pickVariant
-POST        /test_sch              controllers.WSController.testScheduler
-GET         /questions             controllers.XLController.indexQuestions
-POST        /upload_file           controllers.XLController.uploadExcelFile
-POST        /upload_images         controllers.XLController.uploadImages
-POST        /save_or_pick          controllers.XLController.saveOrPick(num: Int)
+POST        /test_sch                controllers.WSController.testScheduler
+GET         /questions               controllers.XLController.indexQuestions
+POST        /upload_file             controllers.XLController.uploadExcelFile
+POST        /upload_images           controllers.XLController.uploadImages
+POST        /save_or_pick            controllers.XLController.saveOrPick(num: Int)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file          controllers.Assets.at(path="/public", file)
+GET         /assets/*file            controllers.Assets.at(path="/public", file)
 
     

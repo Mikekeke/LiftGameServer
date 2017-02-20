@@ -84,6 +84,11 @@ label {
 .framed {
     border: solid 2px cadetblue;
 }
+.lightFramed {
+    border: solid 1px #909090;
+    padding: 1ex;
+    background: #b7dade;
+}
 
 #timer_buttons {
     display: table-column;
@@ -152,5 +157,37 @@ label {
     color: black;
     font-size: medium;
     border: solid 2px brown;
+}
+
+.floatLeft {
+    float: left;
+}
+
+#file_actions {
+    width: 100%;
+    background: #ecfff8;
+    height: 25ex;
+}
+#download_block {
+    width: 50%;
+    float: left;
+    height: 25ex;
+}
+
+#delete_block {
+    width: 50%;
+    float: right;
+    height: 25ex;
+}
+#excel_questions {
+    width: 100%;
+    float: none;
+}
+
+.delete_button {
+    background: red;
+    width: 30ex;
+    height: 7ex;
+    margin: 1ex;
 }
 

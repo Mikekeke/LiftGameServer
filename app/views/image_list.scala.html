@@ -1,0 +1,10 @@
+@(images: Seq[String])
+<div id="question_view">
+    <h2>Список картинок:</h2>
+    <ol>
+    @images.map {image =>
+        <li><a href="@routes.WSController.getImageByName(image)">@image</a></li>
+    }
+    </ol>
+
+</div>

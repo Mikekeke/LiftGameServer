@@ -22,14 +22,14 @@ import scala.util.{Failure, Success, Try}
   */
 @Singleton
 class XLController @Inject()
-(implicit system: ActorSystem, materializer: Materializer,  configuration: Configuration,
+(implicit system: ActorSystem, materializer: Materializer, configuration: Configuration,
  fileUtils: FileUtils, excelParser: ExcelParser)
   extends Controller {
 
   //  var file: Option[File] = None
   val excelExtFilter = new FileNameExtensionFilter("Excel", "xlsx")
 
-//  var QUESTIONS: Seq[Question] = Seq.empty
+  //  var QUESTIONS: Seq[Question] = Seq.empty
 
   def indexQuestions = Action { implicit request =>
     Try(excelParser.getQuestions) match {
@@ -79,10 +79,10 @@ class XLController @Inject()
       val files = request.body.files
       val imgDir = new File(fileUtils.getImagesDir.get)
       if (!imgDir.exists()) imgDir.mkdir()
-      files.foreach(file => {
+      files.filterNot(_.filename.isEmpty).foreach(file => {
         val toSave = new File(imgDir, file.filename)
         if (toSave.exists()) toSave.delete()
-        file.ref.moveTo(toSave)
+        if (!toSave.isDirectory) file.ref.moveTo(toSave)
       })
       Redirect(routes.XLController.indexQuestions())
     } catch {
@@ -135,6 +135,51 @@ class XLController @Inject()
           Redirect(routes.WSController.index())
         }
       }
+    }
+  }
+
+  def deleteImages = Action { implicit request =>
+    try {
+      val files = new File(fileUtils.getImagesDir.get).listFiles()
+      if (files.nonEmpty) {
+        files.foreach(_.delete())
+        Ok("Изображения далены")
+      } else NotFound
+
+    } catch {
+      case e: Exception =>
+        Logger.error("Ошбка при удалении изображений", e)
+        BadRequest("Ошбка при удалении изображений: " + e.getMessage)
+    }
+  }
+
+  def deleteQuestions = Action { implicit request =>
+    try {
+      val files = new File(fileUtils.getUploadDir).listFiles().filterNot(_.isDirectory)
+      if (files.nonEmpty) {
+        files.foreach(file => if (file.isFile) file.delete())
+        Ok("Вопросы удалены")
+      } else
+        NotFound("Файлов с вопросами не найдено")
+
+    } catch {
+      case e: Exception =>
+        Logger.error("Ошбка при удалении фалов вопросов", e)
+        BadRequest("Ошбка при удалении фалов вопросов: " + e.getMessage)
+    }
+  }
+
+  def listImages = Action { implicit request =>
+    try {
+      val files = new File(fileUtils.getImagesDir.get).listFiles().filterNot(_.isDirectory).map(_.getName)
+      if (files.nonEmpty) {
+        Ok(views.html.image_list(files))
+      } else
+        NotFound("Картинок не найдено")
+    } catch {
+      case e: Exception =>
+        Logger.error("Ошбка при запросе списка картинок", e)
+        BadRequest("Ошбка при запросе списка картинок: " + e.getMessage)
     }
   }
 }

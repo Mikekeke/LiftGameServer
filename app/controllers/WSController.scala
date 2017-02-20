@@ -97,7 +97,7 @@ class WSController @Inject()
       val dir = new File(fileUtils.getImagesDir.get)
       val files = dir.list()
       if (files.nonEmpty && files.contains(imgName)) Ok.sendFile(new File(dir, imgName))
-      else BadRequest(s"Can't get file: $imgName")
+      else NotFound(s"Can't get file: $imgName")
 
     } catch {
       case e: Exception =>

@@ -10,45 +10,75 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/elevico.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/materialize.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/modal_images_list.css")">
     </head>
-    <body>
-        <p><a href="@routes.WSController.index()">назад</a></p>
-        <div id="download_block" class="framed">
-            <p><a href="@routes.XLController.downloadExcel()">Скачать файл с вопросами</a></p>
+    <body style="padding-left: 5px;
+        padding-right: 5px">
+        <p><a href="@routes.WSController.index()"><-назад</a></p>
 
-            @helper.form(action = routes.XLController.uploadExcelFile(), 'enctype -> "multipart/form-data") {
-                <input type="file" name="excel">
-                <input type="submit" value="Загрузить выбранный файл">
-                }
+        <div id="file_actions">
+            <div id="download_block" class="framed">
+                <p><a href="@routes.XLController.downloadExcel()">Скачать файл с вопросами</a>
+                    ||
+                    <a href="@routes.XLController.listImages()">Список катинок</a></p>
 
-            @helper.form(action = routes.XLController.uploadImages(), 'enctype -> "multipart/form-data") {
-                <input type="file" name="images" id ="images" multiple>
-                <input type="submit" value="Загрузить изображения">
-                }
+                <div >
+                    <label>Загрузка вопросов</label>
+                    @helper.form(action = routes.XLController.uploadExcelFile(),
+                        'enctype -> "multipart/form-data",
+                        'class -> "lightFramed") {
+                        <input type="file" name="excel">
+                        <input type="submit" value="Загрузить выбранный файл">
+                    }
+                    <label>Загрузка изображений</label>
+                    @helper.form(action = routes.XLController.uploadImages(),
+                        'enctype -> "multipart/form-data",
+                        'class -> "lightFramed") {
+                        <input type="file" name="images" id ="images" multiple>
+                        <input type="submit" value="Загрузить изображения">
+                        }
+                </div>
+            </div>
+
+            <div id="delete_block" class="framed">
+                <button type="button" class="delete_button" onclick="deleteExcel();">Удалить вопросы</button>
+                <br>
+                <button type="button" class="delete_button" onclick="deleteImages();">Удалить картинки</button>
+            </div>
         </div>
 
         <div >
-
-        <p><b><span style="font-size: large; ">Cписок "не сыграных" вопросов</span></b></p>
-
+            <p><b><span style="font-size: large; ">Cписок "не сыграных" вопросов</span></b></p>
         </div>
 
-        <div class="collection">
+        <div id="excelQuestions" class="collection">
         @for(q <- questions) {
             @helper.form(action = routes.XLController.saveOrPick(questions.indexOf(q))) {
                 <a href="#!" class="collection-item">
-                    <label>№<textarea class="q_text" id="number" rows="2" name="number" cols="1" contenteditable="true">@q.number</textarea></label>
-                    <label>Название<textarea class="q_text" rows="2" name="name" contenteditable="true">@q.name</textarea></label>
-                    <label>Вопрос<textarea class="q_text" rows="2" name="question" contenteditable="true">@q.question</textarea></label>
-                    <label>Вариант 1<textarea class="q_text" rows="2" name="v1" contenteditable="true">@q.variants("1")</textarea></label>
-                    <label>Вариант 2<textarea class="q_text" rows="2" name="v2" contenteditable="true">@q.variants("2")</textarea></label>
-                    <label>Вариант 3<textarea class="q_text" rows="2" name="v3" contenteditable="true">@q.variants("3")</textarea></label>
-                    <label>Вариант 4<textarea class="q_text" rows="2" name="v4" contenteditable="true">@q.variants("4")</textarea></label>
-                    <label>Правильный вариант<textarea class="q_text" rows="2" name="v_corr" contenteditable="true">@q.correctVar</textarea></label>
-                    <label>Ответ<textarea rows="2" class="q_text" name="answer" contenteditable="true">@q.answer</textarea></label>
-                    <label>Сатус<textarea rows="2" class="q_text" name="status" contenteditable="true">@q.status</textarea></label>
-                    <label>Картинка 1<textarea rows="2" class="q_text" name="img1" contenteditable="true">@q.img1</textarea></label>
-                    <label>Картинка 2<textarea rows="2" class="q_text" name="img2" contenteditable="true">@q.img2</textarea></label>
+                    <label>
+                        №<textarea class="q_text" id="number" rows="2" name="number" cols="1" contenteditable="true">@q.number</textarea></label>
+                    <label>
+                        Название<textarea class="q_text" rows="2" name="name" contenteditable="true">@q.name</textarea></label>
+                    <label>
+                        Вопрос<textarea class="q_text" rows="2" name="question" contenteditable="true">@q.question</textarea></label>
+                    <label>
+                        Вариант 1<textarea class="q_text" rows="2" name="v1" contenteditable="true">@q.variants("1")</textarea></label>
+                    <label>
+                        Вариант 2<textarea class="q_text" rows="2" name="v2" contenteditable="true">@q.variants("2")</textarea></label>
+                    <label>
+                        Вариант 3<textarea class="q_text" rows="2" name="v3" contenteditable="true">@q.variants("3")</textarea></label>
+                    <label>
+                        Вариант 4<textarea class="q_text" rows="2" name="v4" contenteditable="true">@q.variants("4")</textarea></label>
+                    <label>
+                        Правильный вариант<textarea class="q_text" rows="2" name="v_corr" contenteditable="true">@q.correctVar</textarea></label>
+                    <label>
+                        Ответ<textarea rows="2" class="q_text" name="answer" contenteditable="true">@q.answer</textarea></label>
+                    <label>
+                        Сатус<textarea rows="2" class="q_text" name="status" contenteditable="true">@q.status</textarea></label>
+                    <label>
+                        Картинка 1<textarea rows="2" class="q_text" name="img1" contenteditable="true">@q.img1</textarea></label>
+                    <label>
+                        Картинка 2<textarea rows="2" class="q_text" name="img2" contenteditable="true">@q.img2</textarea></label>
                     <br>
                     <button type="submit" name = "proc_q" value="save">Сохранить</button>
                     <button type="submit" name = "proc_q" value="pick">Выбрать</button>
@@ -56,5 +86,6 @@
             }
         }
         </div>
+        <script src="@routes.Assets.at("javascripts/deletion.js")" type="text/javascript"></script>
     </body>
 </html>
