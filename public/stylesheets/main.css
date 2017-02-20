@@ -169,13 +169,13 @@ label {
     height: 25ex;
 }
 #download_block {
-    width: 50%;
+    width: 70%;
     float: left;
     height: 25ex;
 }
 
 #delete_block {
-    width: 50%;
+    width: 30%;
     float: right;
     height: 25ex;
 }
@@ -186,8 +186,8 @@ label {
 
 .delete_button {
     background: red;
-    width: 30ex;
-    height: 7ex;
+    width: 25ex;
+    height: 5ex;
     margin: 1ex;
 }
 
